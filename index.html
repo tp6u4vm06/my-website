@@ -30,13 +30,58 @@
     }
 
     /* ------- 導覽列 ------- */
-    .nav { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:rgba(255,255,255,0.7); backdrop-filter: blur(8px); box-shadow: var(--shadow); position: sticky; top:0; z-index:10; }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .logo { width:42px; height:42px; border-radius:8px; background:var(--blue); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(30,144,255,0.35); }
-    .logo img { height:48px; width:auto; object-fit:contain; display:block; border-radius:12px; }
-    .nav-links { display:flex; gap:16px; align-items:center; }
-    .nav-links a { color:#033; text-decoration:none; font-weight:700; font-size:14px; padding:8px 10px; border-radius:8px; }
-    .nav-links a.active, .nav-links a:hover { color:#fff; background:var(--blue); }
+    .nav { 
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between; 
+      padding:14px 20px; 
+      background:rgba(255,255,255,0.7); 
+      backdrop-filter: blur(8px); 
+      box-shadow: var(--shadow); 
+      position: sticky; 
+      top:0; z-index:10; 
+    }
+    .brand { 
+      display:flex; 
+      align-items:center; 
+      gap:12px; 
+    }
+    .logo { 
+      width:42px; height:42px; 
+      border-radius:8px; 
+      background:var(--blue); 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      color:#fff; 
+      font-weight:700; 
+      font-size:18px; 
+      box-shadow:0 4px 10px rgba(30,144,255,0.35); 
+    }
+    .logo img { 
+      height:48px; 
+      width:auto; 
+      object-fit:contain; 
+      display:block; 
+      border-radius:12px; 
+    }
+    .nav-links { 
+      display:flex; 
+      gap:16px; 
+      align-items:center; 
+    }
+    .nav-links a { 
+      color:#033; 
+      text-decoration:none; 
+      font-weight:700; 
+      font-size:14px; 
+      padding:8px 10px; 
+      border-radius:8px; 
+    }
+    .nav-links a.active, .nav-links a:hover { 
+      color:#fff; 
+      background:var(--blue); 
+    }
 
     /* ------- Hero 區（僅首頁） ------- */
     .hero {
@@ -81,39 +126,152 @@
     }
 
     /* ------- 篩選區（首頁/買屋） ------- */
-    .controls { max-width:1200px; margin:24px auto; padding:20px; background:#fff; border-radius:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; box-shadow: var(--shadow); }
-    .controls .field { display:flex; flex-direction:column; gap:6px; }
-    label { font-size:13px; color:var(--muted); }
+    .controls { 
+      max-width:1200px; 
+      margin:24px auto; 
+      padding:20px; 
+      background:#fff; 
+      border-radius:12px; 
+      display:flex; 
+      gap:12px; 
+      align-items:center; 
+      flex-wrap:wrap; 
+      box-shadow: var(--shadow); 
+    }
+    .controls .field { 
+      display:flex; 
+      flex-direction:column; 
+      gap:6px; 
+    }
+    label { 
+      font-size:13px; 
+      color:var(--muted); 
+    }
     input[type="text"], input[type="number"], select { padding:10px 12px; border-radius:8px; border:1px solid #c9dcff; min-width:160px; outline:none; }
     input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,144,255,0.15); }
-    .range-inline { display:flex; gap:8px; align-items:center; }
-    .controls .btns { margin-left:auto; display:flex; gap:8px; }
+    .range-inline { 
+      display:flex; 
+      gap:8px; 
+      align-items:center; 
+    }
+    .controls .btns { 
+      margin-left:auto; 
+      display:flex; gap:8px; 
+    }
 
     /* ------- 卡片列表 ------- */
-    .container { max-width:1200px; margin:24px auto; padding:0 12px 80px; }
-    .section-title { margin:8px 0 14px 4px; font-weight:800; color:#123; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:20px; }
-    .card { background:var(--card); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; transition: transform .2s ease, box-shadow .2s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(30,144,255,.15); }
-    .card .img { height:160px; background:#ccc center/cover no-repeat; }
-    .card .content { padding:12px; display:flex; flex-direction:column; gap:10px; flex:1; }
-    .meta { display:flex; justify-content:space-between; align-items:center; }
-    .price { font-weight:800; color: var(--blue-dark); }
-    .tags { font-size:13px; color: var(--muted); }
-    .desc { font-size:14px; color:#333; }
-    .card .actions { display:flex; gap:8px; padding:12px; border-top:1px solid #f0f0f0; }
-    .btn { flex:1; padding:10px; border-radius:8px; border:0; font-weight:700; cursor:pointer; transition: all .2s; }
-    .btn.primary { background: var(--blue); color:#fff; }
-    .btn.primary:hover { background: var(--blue-dark); }
-    .btn.ghost { background: transparent; border:1px solid #cfd9e8; }
-    .btn.ghost:hover { border-color: var(--blue); color: var(--blue); }
-    .btn.link { background: transparent; text-decoration: underline; color: var(--blue-dark); flex: 0; }
+    .container { 
+      max-width:1200px; 
+      margin:24px auto; 
+      padding:0 12px 80px; 
+    }
+    .section-title { 
+      margin:8px 0 14px 4px; 
+      font-weight:800; 
+      color:#123; 
+    }
+    .grid { 
+      display:grid; 
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+      gap:20px; 
+    }
+    .card { 
+      background:var(--card); 
+      border-radius:12px; overflow:hidden; 
+      box-shadow:var(--shadow); 
+      display:flex; 
+      flex-direction:column; 
+      transition: transform .2s ease, box-shadow .2s ease; 
+    }
+    .card:hover { 
+      transform: translateY(-4px); 
+      box-shadow: 0 10px 24px rgba(30,144,255,.15); 
+    }
+    .card .img { 
+      height:160px; 
+      background:#ccc center/cover no-repeat; 
+    }
+    .card .content { 
+      padding:12px; 
+      display:flex; 
+      flex-direction:column; 
+      gap:10px; flex:1; 
+    }
+    .meta { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+    }
+    .price { 
+      font-weight:800; 
+      color: var(--blue-dark); 
+    }
+    .tags { 
+      font-size:13px; 
+      color: var(--muted); 
+    }
+    .desc { 
+      font-size:14px; 
+      color:#333; 
+    }
+    .card .actions { 
+      display:flex; 
+      gap:8px; 
+      padding:12px; 
+      border-top:1px solid #f0f0f0; 
+    }
+    .btn { 
+      flex:1; padding:10px; 
+      border-radius:8px; 
+      border:0; 
+      font-weight:700; 
+      cursor:pointer; 
+      transition: all .2s; 
+    }
+    .btn.primary { 
+      background: var(--blue); 
+      color:#fff; 
+    }
+    .btn.primary:hover { 
+      background: var(--blue-dark); 
+    }
+    .btn.ghost { 
+      background: transparent; 
+      border:1px solid #cfd9e8; 
+    }
+    .btn.ghost:hover { 
+      border-color: var(--blue); color: var(--blue); 
+    }
+    .btn.link { 
+      background: transparent; 
+      text-decoration: underline; 
+      color: var(--blue-dark); 
+      flex: 0; 
+    }
 
     /* ------- 比價表格 ------- */
-    .table-wrap { overflow-x:auto; background:#fff; border-radius:12px; box-shadow: var(--shadow); }
-    table { width:100%; border-collapse:collapse; min-width:720px; }
-    th, td { padding:12px; border-bottom:1px solid #eee; text-align:left; }
-    th { background:#f7fbff; font-weight:800; color:#123; position:sticky; top:0; }
+    .table-wrap { 
+      overflow-x:auto; 
+      background:#fff; 
+      border-radius:12px; 
+      box-shadow: var(--shadow); 
+    }
+    table { 
+      width:100%; 
+      border-collapse:collapse; 
+      min-width:720px; 
+    }
+    th, td { 
+      padding:12px; border-bottom:1px solid #eee; 
+      text-align:left; 
+    }
+    th { 
+      background:#f7fbff; 
+      font-weight:800; 
+      color:#123; 
+      position:sticky; 
+      top:0; 
+    }
 
     /* ------- 響應式 ------- */
     @media (max-width: 760px) {
@@ -510,20 +668,4 @@ ${item.desc}`);
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
