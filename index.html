@@ -6,14 +6,7 @@
   <title>易居房EG City</title>
   <style>
     /* ------- 基本樣式 ------- */
-    :root {
-      --bg: #1a1a1a;         /* 主背景：石墨灰 */
-      --card: #242424;       /* 卡片底色：深灰 */
-      --border: #3a3a3a;     /* 邊框線：石板灰 */
-      --text-main: #f0f0f0;  /* 主文字 */
-      --text-muted: #b2b2b2; /* 次文字 */
-    }
-
+    
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -276,29 +269,60 @@
       .nav { padding:10px 12px; }
     }
 
-    /* ---- 黑灰主題字色修正 ---- */
-    .card {
-      background: #1e1e1e; /* 卡片底色 */
-      color: #f0f0f0;      /* 主要文字顏色 */
+    /* ---- 黑銀主題統一覆蓋 ---- */
+
+    /* 全局 */
+    body{
+      background: linear-gradient(180deg, var(--blue-light) 0%, var(--bg) 80%);
+      color: var(--text-main);
     }
     
-    .card .content {
-      color: #f0f0f0;      /* 讓內文整體變亮 */
+    /* 導覽列 */
+    .nav{ background: rgba(18,18,18,.85); }
+    .nav-links a{ color: var(--text-main); }
+    .nav-links a.active,.nav-links a:hover{ background: var(--blue); color:#121212; }
+    
+    /* HERO：去漸層＋75% 遮罩（你之前說要 75% 透明度） */
+    .hero{ position:relative; background: url("./images/id8.jpg") center/cover no-repeat; }
+    .hero::before{
+      content:""; position:absolute; inset:0; border-radius:16px;
+      background: rgba(0,0,0,.75);
+    }
+    .hero-inner{ position:relative; z-index:1; }
+    
+    /* 篩選區 */
+    .controls{ background:#1f1f1f; box-shadow: var(--shadow); }
+    label{ color: var(--text-muted); }
+    input[type="text"], input[type="number"], select{
+      background:#151515; color: var(--text-main);
+      border:1px solid var(--border);
+    }
+    input:focus, select:focus{
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(192,192,192,.25);
     }
     
-    .card .meta div,
-    .card .desc,
-    .card .tags {
-      color: #d0d0d0;      /* 副文字、標籤灰白 */
-    }
+    /* 區塊標題 */
+    .section-title{ color:#f5f5f5; }
     
-    .price {
-      color: #c0c0c0;      /* 銀灰價格字色 */
-    }
+    /* 卡片 */
+    .card{ background: var(--card); color: var(--text-main); }
+    .card .content{ color: var(--text-main); }
+    .tags,.desc{ color: var(--text-muted); }
+    .price{ color: var(--blue); }
     
-    .section-title {
-      color: #f5f5f5;      /* 標題亮灰白 */
-    }
+    /* 按鈕 */
+    .btn.primary{ background: var(--blue); color:#121212; }
+    .btn.primary:hover{ background: var(--blue-dark); }
+    .btn.ghost{ background: transparent; border:1px solid var(--border); color: var(--text-main); }
+    .btn.ghost:hover{ border-color: var(--blue); color: var(--blue); }
+    .btn.link{ color: var(--blue); }
+    
+    /* 表格 */
+    .table-wrap{ background:#1f1f1f; }
+    th{ background:#222; color:#eee; }
+    td{ border-bottom:1px solid #333; color: var(--text-main); }
+
     
     /* 導覽列與篩選區的文字也調亮 */
     .nav-links a {
@@ -700,6 +724,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
