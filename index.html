@@ -275,6 +275,43 @@
       .controls { padding:14px; }
       .nav { padding:10px 12px; }
     }
+
+    /* ---- 黑灰主題字色修正 ---- */
+    .card {
+      background: #1e1e1e; /* 卡片底色 */
+      color: #f0f0f0;      /* 主要文字顏色 */
+    }
+    
+    .card .content {
+      color: #f0f0f0;      /* 讓內文整體變亮 */
+    }
+    
+    .card .meta div,
+    .card .desc,
+    .card .tags {
+      color: #d0d0d0;      /* 副文字、標籤灰白 */
+    }
+    
+    .price {
+      color: #c0c0c0;      /* 銀灰價格字色 */
+    }
+    
+    .section-title {
+      color: #f5f5f5;      /* 標題亮灰白 */
+    }
+    
+    /* 導覽列與篩選區的文字也調亮 */
+    .nav-links a {
+      color: #f0f0f0;
+    }
+    .nav-links a.active, .nav-links a:hover {
+      background: #c0c0c0;
+      color: #121212;
+    }
+    label {
+      color: #d0d0d0;
+    }
+
   </style>
 </head>
 <body>
@@ -663,6 +700,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
