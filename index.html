@@ -127,9 +127,9 @@
     ];
 
     const NEW_PROJECTS = [
-      { id:101, name:"永康真", builder:"永康建建設", city:"新北市板橋區", priceWanFrom: 3200, img:"./images/id101.jpg", highlights:["府中雙城心"," 板南線450米"," 新板橋人的醇靜宅"] },
-      { id:102, name:"信義誠家", builder:"誠家興建設", city:"台北市信義區", priceWanFrom: 1200, img:"./images/id102.jpg", highlights:["商圈及學區車行５分鐘內生活圈"] },
-      { id:103, name:"佳鋐首耀", builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom: 900, img:"./images/id103.jpg", highlights:["車站商圈","雙軌道捷運宅","商圈生活一把抓"] }
+      { id:101, name:"永康真", builder:"永康建建設", city:"新北市板橋區", priceWanFrom: 89, img:"./images/id101.jpg", highlights:["府中雙城心"," 板南線450米"," 新板橋人的醇靜宅"] },
+      { id:102, name:"信義誠家", builder:"誠家興建設", city:"台北市信義區", priceWanFrom: 92, img:"./images/id102.jpg", highlights:["商圈及學區車行５分鐘內生活圈"] },
+      { id:103, name:"佳鋐首耀", builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom: 728, img:"./images/id103.jpg", highlights:["車站商圈","雙軌道捷運宅","商圈生活一把抓"] }
     ];
 
     const NEWS = [
@@ -201,7 +201,7 @@
             <div class="desc">${p.highlights.map(h=>`#${h}`).join(' ')}</div>
           </div>
           <div class="actions">
-            <button class="btn ghost">起 NT$ ${formatWan(p.priceWanFrom)}</button>
+            <button class="btn ghost">開價約 NT$ ${formatWan(p.priceWanFrom)}</button>
             <button class="btn primary" onclick="alert('已登記賞屋通知：${p.name}')">預約賞屋</button>
           </div>
         </article>`;
@@ -436,6 +436,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
