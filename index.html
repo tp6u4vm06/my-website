@@ -127,10 +127,40 @@
     ];
 
     const NEW_PROJECTS = [
-      { id:101, name:"永康真", builder:"永康建建設", city:"新北市板橋區", priceWanFrom: 89, img:"./images/id101.jpg", highlights:["府中雙城心"," 板南線450米"," 新板橋人的醇靜宅"] },
-      { id:102, name:"信義誠家", builder:"誠家興建設", city:"台北市信義區", priceWanFrom: 92, img:"./images/id102.jpg", highlights:["商圈及學區車行５分鐘內生活圈"] },
-      { id:103, name:"佳鋐首耀", builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom: 728, img:"./images/id103.jpg", highlights:["車站商圈","雙軌道捷運宅","商圈生活一把抓"] }
+      {
+        id:101,
+        name:"永康真",
+        builder:"永康建建設",
+        city:"新北市板橋區",
+        priceWanFrom: 2061,
+        img:"./images/id101.jpg",
+        highlights:["府中雙城心"," 板南線450米"," 新板橋人的醇靜宅"],
+        linkBrochure:"https://newhouse.591.com.tw/138134?bid=3248&utm_term=Paid&gad_source=1&gad_campaignid=17039304164&gbraid=0AAAAAD-HmYDe3I06hpqVEnf2Xh2MM5h2N&gclid=CjwKCAjw0sfHBhB6EiwAQtv5qQIg2W5U8740h-r_k3bOHMHA5SCIEFaQ1ccOfLU79l9CwG90D2QyARoCAE8QAvD_BwE"     // 電子型錄／官網
+      },
+      {
+        id:102,
+        name:"信義誠家",
+        builder:"誠家興建設",
+        city:"台北市信義區",
+        priceWanFrom: 92,
+        img:"./images/id102.jpg",
+        highlights:["商圈及學區車行５分鐘內生活圈"],
+        linkReserve: "https://forms.gle/xxxx-syc-reserve",
+        linkLine:    "https://lin.ee/xxxx-syc-line",
+        linkBrochure:"https://newhouse.591.com.tw/136360"
+      },
+      {
+        id:103,
+        name:"佳鋐首耀",
+        builder:"佳鋐建建設",
+        city:"台中市梧棲區",
+        priceWanFrom: 728,
+        img:"./images/id103.jpg",
+        highlights:["車站商圈","雙軌道捷運宅","商圈生活一把抓"],
+        linkBrochure:"https://newhouse.591.com.tw/137089"
+      }
     ];
+
 
     const NEWS = [
       { title:"Q4都會區交易熱度回溫", source:"經濟日報", time:"今天", url:"#" },
@@ -190,22 +220,25 @@
         </article>`;
     }
     function projectCard(p){
-      return `
-        <article class="card">
-          <div class="img" style="background-image:url('${p.img}')" role="img" aria-label="${p.name}"></div>
-          <div class="content">
-            <div class="meta">
-              <div style="font-weight:800">${p.name}</div>
-              <div class="tags">${p.city} • ${p.builder}</div>
-            </div>
-            <div class="desc">${p.highlights.map(h=>`#${h}`).join(' ')}</div>
-          </div>
-          <div class="actions">
-            <button class="btn ghost">開價約 NT$ ${formatWan(p.priceWanFrom)}</button>
-            <button class="btn primary" onclick="alert('已登記賞屋通知：${p.name}')">預約賞屋</button>
-          </div>
-        </article>`;
-    }
+  return `
+    <article class="card">
+      <div class="img" style="background-image:url('${p.img}')" role="img" aria-label="${p.name}"></div>
+      <div class="content">
+        <div class="meta">
+          <div style="font-weight:800">${p.name}</div>
+          <div class="tags">${p.city} • ${p.builder}</div>
+        </div>
+        <div class="desc">${p.highlights.map(h=>`#${h}`).join(' ')}</div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost">開價約 NT$ ${formatWan(p.priceWanFrom)}</button>
+        <a href="${p.linkReserve}"  target="_blank" class="btn primary">預約賞屋</a>
+        <a href="${p.linkLine}"     target="_blank" class="btn ghost">加 LINE</a>
+        <a href="${p.linkBrochure}" target="_blank" class="btn link">看型錄</a>
+      </div>
+    </article>`;
+}
+
 
     /** 控制列（共用） **/
     function Controls({ showSort=false }){
@@ -436,6 +469,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
