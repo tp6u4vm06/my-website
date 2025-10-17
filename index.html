@@ -6,7 +6,22 @@
   <title>易居房EG City</title>
   <style>
     /* ------- 基本樣式 ------- */
+    :root{
+      /* 黑銀主題基礎色 */
+      --bg:#1a1a1a;            /* 主背景 */
+      --card:#242424;          /* 卡片底 */
+      --border:#3a3a3a;        /* 邊框線 */
+      --text-main:#f0f0f0;     /* 主要文字 */
+      --text-muted:#b2b2b2;    /* 次要文字 */
     
+      /* 兼容你原本樣式在用的變數 */
+      --blue:#c0c0c0;          /* 主按鈕/重點(銀) */
+      --blue-dark:#9a9a9a;     /* 按鈕 hover 銀灰 */
+      --blue-light:#202020;    /* 頁面頂部漸層用的深灰 */
+      --muted:var(--text-muted);
+      --shadow:0 6px 18px rgba(0,0,0,.35);
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -724,6 +739,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
