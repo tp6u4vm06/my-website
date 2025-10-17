@@ -313,7 +313,7 @@
           <h2 class="section-title">即時新聞</h2>
           <div class="table-wrap">
             <table aria-label="房市新聞">
-              <thead><tr><th style="width:60%">標題</th><th>來源</th><th>時間</th><th></th></tr></thead>
+              <thead><tr><th style="width:60%">標題</th><th>來源</th><th></th></tr></thead>
               <tbody>
                 ${NEWS.map(n=>`<tr><td>${n.title}</td><td>${n.source}</td><td>${n.time}</td><td><a class="btn link" href="${n.url}">查看</a></td></tr>`).join('')}
               </tbody>
@@ -467,6 +467,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
