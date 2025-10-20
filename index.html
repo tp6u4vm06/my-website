@@ -544,17 +544,7 @@
       const 總價元 = num(map['總價元']);
       const 單價元平方公尺 = num(map['單價元平方公尺']);
       const 建物移轉總面積平方公尺 = num(map['建物移轉總面積平方公尺']);
-      const 建築完成年月 = map['建築完成年月'] || '';
-
-      const addrParts = splitCityDist(地址);
-      const city = addrParts.city;
-      const district = 鄉鎮市區 || addrParts.district;
-
-      const totalWan = 總價元 / 10000;
-      const unitWanPerPing = (單價元平方公尺 * 3.305785) / 10000;
-      const areaPing = 建物移轉總面積平方公尺 ? (建物移轉總面積平方公尺 / 3.305785) : 0;
-
-      const buildDate = buildYmToDate(建築完成年月);
+      
       const ageYears = calcAgeYears(buildDate);
 
       const rec = {
@@ -698,7 +688,7 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
-          <td>${r.age}</td>
+          
         </tr>`).join('');
       const info = $('#price-info'); if(info) info.textContent = `共 ${total} 筆，頁 ${priceState.page}/${pages}`;
       $('#price-prev')?.addEventListener('click', ()=>{ if(priceState.page>1){ priceState.page--; applyPrice(); }});
@@ -831,6 +821,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
