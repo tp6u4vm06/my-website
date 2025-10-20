@@ -7,15 +7,14 @@
   <style>
     /* ------- 基本樣式（黑銀主題） ------- */
     :root{
-      --bg:#1a1a1a;            /* 主背景 */
-      --card:#242424;          /* 卡片底 */
-      --border:#3a3a3a;        /* 邊框線 */
-      --text-main:#f0f0f0;     /* 主要文字 */
-      --text-muted:#b2b2b2;    /* 次要文字 */
-      /* 兼容原有變數 */
-      --blue:#c0c0c0;          /* 主按鈕/重點(銀) */
-      --blue-dark:#9a9a9a;     /* 按鈕 hover 銀灰 */
-      --blue-light:#202020;    /* 頂部漸層深灰 */
+      --bg:#1a1a1a;
+      --card:#242424;
+      --border:#3a3a3a;
+      --text-main:#f0f0f0;
+      --text-muted:#b2b2b2;
+      --blue:#c0c0c0;
+      --blue-dark:#9a9a9a;
+      --blue-light:#202020;
       --muted:var(--text-muted);
       --shadow:0 6px 18px rgba(0,0,0,.35);
       font-family: "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
@@ -111,7 +110,9 @@
   </header>
 
   <!-- 內容容器（由 Router 動態渲染） -->
-  <main id="app" class="container" aria-live="polite"></main>
+  <main id="app" class="container" aria-live="polite">
+    <noscript style="color:#fff">本網站需要啟用 JavaScript 才能運作</noscript>
+  </main>
 
   <script>
     /** 模擬資料 **/
@@ -216,7 +217,6 @@
         </article>`;
     }
 
-
     /** 控制列（首頁/買屋共用） **/
     function Controls({ showSort=false }){
       return `
@@ -271,6 +271,11 @@
     /*** 首頁 ***/
     function PageHome(){
       const top6 = [...DATA].sort((a,b)=> b.priceWan - a.priceWan).slice(0,6);
+      const newsRows = [
+        { title:"地產天下", source:"自由時報", url:"https://estate.ltn.com.tw/" },
+        { title:"房市即時", source:"工商時報", url:"https://www.ctee.com.tw/livenews/house" },
+        { title:"591 房市新聞", source:"591", url:"https://news.591.com.tw/" },
+      ].map(n => '<tr><td>' + n.title + '</td><td>' + n.source + '</td><td><a class="btn link" href="' + n.url + '" target="_blank" rel="noopener">查看</a></td></tr>').join('');
       return `
         <section class="hero" aria-label="主視覺">
           <div class="hero-inner">
@@ -293,13 +298,7 @@
           <div class="table-wrap">
             <table aria-label="房市新聞">
               <thead><tr><th style="width:60%">標題</th><th>來源</th><th>連結</th></tr></thead>
-              <tbody>
-                ${[
-                  { title:"地產天下", source:"自由時報", url:"https://estate.ltn.com.tw/" },
-                  { title:"房市即時", source:"工商時報", url:"https://www.ctee.com.tw/livenews/house" },
-                  { title:"591 房市新聞", source:"591", url:"https://news.591.com.tw/" },
-                ].map(n=>`<tr><td>${n.title}</td><td>${n.source}</td><td><a class="btn link" href="${n.url}" target="_blank" rel="noopener">查看</a></td></tr>`).join('')}
-              </tbody>
+              <tbody>${newsRows}</tbody>
             </table>
           </div>
         </section>
@@ -340,7 +339,7 @@
               <tr><td>價格</td>${items.map(it=>`<td>NT$ ${formatWan(it.priceWan)}</td>`).join('')}</tr>
               <tr><td>特色</td>${items.map(it=>`<td>${it.desc}</td>`).join('')}</tr>
               <tr>
-                <td></td>${items.map(it=>`<td><button class=\"btn ghost\" onclick=\"toggleCompare(${it.id}); route('#/compare')\">移除</button> <button class=\"btn primary\" onclick=\"contactAgent(${it.id})\">洽詢</button></td>`).join('')}
+                <td></td>${items.map(it=>`<td><button class="btn ghost" onclick="toggleCompare(${it.id}); route('#/compare')">移除</button> <button class="btn primary" onclick="contactAgent(${it.id})">洽詢</button></td>`).join('')}
               </tr>
             </tbody>
           </table>
@@ -534,15 +533,10 @@
           return okCity && okDist && okType && okFrom && okTo && okTotal && okUnit;
         });
         filtered.forEach(r=> csvRows.push([r.date,r.city,r.district,r.addr,r.type,r.areaPing,r.unitWanPerPing,r.totalWan,r.age]));
-        // 1) 用 \n 當作換行，不要放真正的換行字元
-      const csv = csvRows
-        .map(row => row.map(v => `"${String(v).replaceAll('"','""')}"`).join(','))
-        .join('\n');
-
-        // 2) 用 \uFEFF 插入 BOM，不要貼入不可見的「實際字元」
+        const csv = csvRows
+          .map(row => row.map(v => `"${String(v).replaceAll('"','""')}"`).join(','))
+          .join('\n');
         const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-
-        const blob = new Blob(["﻿"+csv], {type:'text/csv;charset=utf-8;'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'price_records.csv';
@@ -635,6 +629,7 @@
       }
     }
     window.addEventListener('hashchange', renderRoute);
+    window.addEventListener('DOMContentLoaded', renderRoute);
 
     /** 其他互動 **/
     function viewDetail(id){
@@ -652,11 +647,6 @@ ${item.desc}`);
       const name = encodeURIComponent(item.title);
       window.location.href = `mailto:agent@example.com?subject=我要諮詢%20${name}&body=您好，我想了解 ${name} 的更多資訊。`;
     }
-
-    // 初始化
-    renderRoute();
   </script>
 </body>
 </html>
-
-
