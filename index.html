@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>易居房EG City｜首頁/買屋/比價/時價登錄</title>
+  <title>易居房EG City｜首頁/買屋/比價/實價登錄</title>
   <style>
     /* ------- 基本樣式（黑銀主題） ------- */
     :root{
@@ -70,7 +70,7 @@
     .btn.ghost:hover { border-color: var(--blue); color: var(--blue); }
     .btn.link { background: transparent; text-decoration: underline; color: var(--blue); flex: 0; }
 
-    /* ------- 表格（比價 / 時價） ------- */
+    /* ------- 表格（比價 / 實價） ------- */
     .table-wrap { overflow-x:auto; background:#1f1f1f; border-radius:12px; box-shadow: var(--shadow); }
     table { width:100%; border-collapse:collapse; min-width:900px; }
     th, td { padding:12px; border-bottom:1px solid #333; text-align:left; color: var(--text-main); }
@@ -104,7 +104,7 @@
       <a href="#/home" id="nav-home">首頁</a>
       <a href="#/buy" id="nav-buy">買屋</a>
       <a href="#/compare" id="nav-compare">比價</a>
-      <a href="#/price" id="nav-price">時價登錄</a>
+      <a href="#/price" id="nav-price">實價登錄</a>
     </nav>
   </header>
 
@@ -340,12 +340,12 @@
       `;
     }
 
-    /*** 時價登錄（條列 + 篩選 + 排序 + 匯出 + CSV匯入） ***/
+    /*** 實價登錄（條列 + 篩選 + 排序 + 匯出 + CSV匯入） ***/
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:10, filters:{} };
 
     function ControlsPrice(){
       return `
-      <section class="controls" role="region" aria-label="時價篩選">
+      <section class="controls" role="region" aria-label="實價篩選">
         <div class="field">
           <label>城市</label>
           <input id="p-city" type="text" placeholder="例如：台北市">
@@ -408,7 +408,7 @@
         <h2 class="section-title">實價登錄（CSV 匯入版）</h2>
         ${ControlsPrice()}
         <div class="table-wrap">
-          <table aria-label="時價表" id="price-table">
+          <table aria-label="實價表" id="price-table">
             <thead>
               <tr>
                 ${headerCell('date','成交月')}
@@ -884,3 +884,4 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
