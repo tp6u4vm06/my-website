@@ -207,7 +207,7 @@
               <div style="font-weight:800">${p.name}</div>
               <div class="tags">${p.city} • ${p.builder}</div>
             </div>
-            <div class="desc">${p.highlights.map(h=>`#${h}`).join(' ')}</div>
+            <div class="desc">${ p.highlights.map(h => '#' + h).join(' ') }</div>
           </div>
           <div class="actions">
             <button class="btn ghost">開價約 NT$ ${formatWan(p.priceWanFrom)}</button>
@@ -215,6 +215,7 @@
           </div>
         </article>`;
     }
+
 
     /** 控制列（首頁/買屋共用） **/
     function Controls({ showSort=false }){
@@ -330,12 +331,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td>圖片</td>${items.map(it=>`<td><div class=\"img\" style=\"height:120px;background-image:url('${it.img}')\"></div></td>`).join('')}</tr>
+              <tr>
+                <td>圖片</td>
+                ${items.map(it => '<td><div class="img" style="height:120px;background-image:url(\'' + it.img + '\')"></div></td>').join('')}
+              </tr>
               <tr><td>地點</td>${items.map(it=>`<td>${it.city}</td>`).join('')}</tr>
               <tr><td>型態</td>${items.map(it=>`<td>${it.type}</td>`).join('')}</tr>
               <tr><td>價格</td>${items.map(it=>`<td>NT$ ${formatWan(it.priceWan)}</td>`).join('')}</tr>
               <tr><td>特色</td>${items.map(it=>`<td>${it.desc}</td>`).join('')}</tr>
-              <tr><td></td>${items.map(it=>`<td><button class=\"btn ghost\" onclick=\"toggleCompare(${it.id}); route('#/compare')\">移除</button> <button class=\"btn primary\" onclick=\"contactAgent(${it.id})\">洽詢</button></td>`).join('')}</tr>
+              <tr>
+                <td></td>${items.map(it=>`<td><button class=\"btn ghost\" onclick=\"toggleCompare(${it.id}); route('#/compare')\">移除</button> <button class=\"btn primary\" onclick=\"contactAgent(${it.id})\">洽詢</button></td>`).join('')}
+              </tr>
             </tbody>
           </table>
         </div>
@@ -646,3 +652,4 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
