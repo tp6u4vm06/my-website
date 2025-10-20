@@ -534,8 +534,14 @@
           return okCity && okDist && okType && okFrom && okTo && okTotal && okUnit;
         });
         filtered.forEach(r=> csvRows.push([r.date,r.city,r.district,r.addr,r.type,r.areaPing,r.unitWanPerPing,r.totalWan,r.age]));
-        const csv = csvRows.map(row=> row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('
-');
+        // 1) 用 \n 當作換行，不要放真正的換行字元
+      const csv = csvRows
+        .map(row => row.map(v => `"${String(v).replaceAll('"','""')}"`).join(','))
+        .join('\n');
+
+        // 2) 用 \uFEFF 插入 BOM，不要貼入不可見的「實際字元」
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+
         const blob = new Blob(["﻿"+csv], {type:'text/csv;charset=utf-8;'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -652,4 +658,5 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
