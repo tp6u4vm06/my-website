@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>易居房EG City｜首頁/買屋/比價/實價登錄</title>
   <style>
-    /* ------- 基本樣式（黑銀主題） ------- */
+    /* ------- 基本樣式 ------- */
     :root{
       --bg:#1a1a1a;
       --card:#242424;
@@ -619,21 +619,22 @@
       return dedupRecords(all);
     }
 
-    // 一鍵載入預設檔名（請放到 ./data/ 資料夾）
+    // 依你目前 data/ 資料夾的檔名
     const PRESET_FILES = [
-      "114年第二季_台中.csv",
       "114年第二季_台北.csv",
-      "114年第二季_台南.csv",
-      "114年第二季_桃園.csv",
-      "114年第二季_高雄.csv",
       "114年第二季_新北.csv",
-      "114年第三季_台中.csv",
+      "114年第二季_桃園.csv",
+      "114年第二季_台中.csv",
+      "114年第二季_台南.csv",
+      "114年第二季_高雄.csv",
       "114年第三季_台北.csv",
-      "114年第三季_台南.csv",
+      "114年第三季_新北.csv",
       "114年第三季_桃園.csv",
-      "114年第三季_高雄.csv",
-      "114年第三季_新北.csv"
+      "114年第三季_台中.csv",
+      "114年第三季_台南.csv",
+      "114年第三季_高雄.csv"
     ];
+
 
     async function autoLoadFromPreset(){
       const base = "./data/";
@@ -876,6 +877,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
