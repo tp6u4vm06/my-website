@@ -87,7 +87,15 @@
     /* ---------------- 首頁：熱門物件（CSV） ---------------- */
     // 放在 data/hot_items.csv；欄位：物件超連結, 物件標題, 地址, 房屋類型, 目前價格
     const HOT_FILE = "hot_items.csv";
-    const HOT_DATA = []; // {id,url,title,address,type,priceWan}
+    const HOT_DATA = [
+      "1_信義房屋_Kaohsiung_P20.csv",
+      "1_信義房屋_Keelung_P20.csv",
+      "1_信義房屋_NewTaipei_P20.csv",
+      "1_信義房屋_Taichung_P20.csv",
+      "1_信義房屋_Tainan_P20.csv",
+      "1_信義房屋_Taipei_P19.csv",
+      "1_信義房屋_Taoyuan_P19.csv",
+    ]; // {id,url,title,address,type,priceWan}
 
     function parseCsv(text){
       const out=[], row=[], pushRow=()=>{ out.push([...row]); row.length=0; };
@@ -128,8 +136,18 @@
     /* ---------------- 實價登錄（CSV 合併） ---------------- */
     const PRICE_DATA = [];
     const PRESET_FILES = [
-      "114年第三季_台北.csv","114年第三季_新北.csv","114年第三季_桃園.csv",
-      "114年第三季_台中.csv","114年第三季_台南.csv","114年第三季_高雄.csv"
+      "114年第二季_台北.csv",
+      "114年第二季_新北.csv",
+      "114年第二季_桃園.csv",
+      "114年第二季_台中.csv",
+      "114年第二季_台南.csv",
+      "114年第二季_高雄.csv",
+      "114年第三季_台北.csv",
+      "114年第三季_新北.csv",
+      "114年第三季_桃園.csv",
+      "114年第三季_台中.csv",
+      "114年第三季_台南.csv",
+      "114年第三季_高雄.csv"
     ];
     const priceState={sortKey:'date',sortDir:'desc',page:1,pageSize:100,filters:{}};
     function num(s){ if(s==null) return 0; return parseFloat(String(s).replace(/[\s,]/g,''))||0; }
@@ -278,3 +296,4 @@
   </script>
 </body>
 </html>
+
