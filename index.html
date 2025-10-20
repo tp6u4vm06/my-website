@@ -409,7 +409,7 @@
                 ${headerCell('areaPing','建坪(坪)')}
                 ${headerCell('unitWanPerPing','單價(萬/坪)')}
                 ${headerCell('totalWan','總價(萬)')}
-                ${headerCell('age','屋齡')}
+                
               </tr>
             </thead>
             <tbody id="price-tbody"></tbody>
@@ -698,7 +698,7 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
-          <td>${r.age}</td>
+          
         </tr>`).join('');
       const info = $('#price-info'); if(info) info.textContent = `共 ${total} 筆，頁 ${priceState.page}/${pages}`;
       $('#price-prev')?.addEventListener('click', ()=>{ if(priceState.page>1){ priceState.page--; applyPrice(); }});
@@ -831,4 +831,5 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
