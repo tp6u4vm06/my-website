@@ -386,14 +386,26 @@
             <input id="p-max-unit" type="number" placeholder="最高" min="0" style="width:120px">
           </div>
         </div>
-
+    
         <div class="btns">
           <button id="p-search" class="btn primary">搜尋</button>
           <button id="p-reset" class="btn ghost">重設</button>
-          
+        </div>
+    
+        <!-- 新增：CSV 操作列 -->
+        <div class="field" style="min-width:260px">
+          <label for="p-files">從本機匯入 CSV（可多選）</label>
+          <input id="p-files" type="file" accept=".csv" multiple>
+          <small style="color:var(--text-muted)">建議 UTF-8 編碼；內政部欄位抬頭可直接辨識。</small>
+        </div>
+        <div class="btns">
+          <button id="p-load" class="btn primary">匯入所選 CSV</button>
+          <button id="p-autoload" class="btn ghost" title="讀取 ./data/ 資料夾中預設清單">一鍵載入資料夾</button>
+          <button id="p-export" class="btn ghost">匯出目前結果</button>
         </div>
       </section>`;
     }
+
 
     function PagePrice(){
       return `
@@ -877,6 +889,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
