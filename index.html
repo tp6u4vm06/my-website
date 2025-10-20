@@ -48,7 +48,7 @@
     .controls { max-width:1200px; margin:24px auto; padding:20px; background:#1f1f1f; border-radius:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; box-shadow: var(--shadow); }
     .controls .field { display:flex; flex-direction:column; gap:6px; }
     label { font-size:13px; color:#d0d0d0; }
-    input[type="text"], input[type="number"], input[type="month"], select, input[type="file"] { background:#151515; color: var(--text-main); padding:10px 12px; border-radius:8px; border:1px solid var(--border); min-width:160px; outline:none; }
+    input[type="text"], input[type="number"], input[type="month"], select { background:#151515; color: var(--text-main); padding:10px 12px; border-radius:8px; border:1px solid var(--border); min-width:160px; outline:none; }
     input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(192,192,192,.25); }
     .range-inline { display:flex; gap:8px; align-items:center; }
     .controls .btns { margin-left:auto; display:flex; gap:8px; }
@@ -135,7 +135,7 @@
       { id:103, name:"佳鋐首耀", builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom:728, img:"./images/id103.jpg", highlights:["車站商圈","雙軌宅"], linkBrochure:"https://newhouse.591.com.tw/137089" }
     ];
 
-    /*** 實價登錄資料容器（初始為空，等 CSV 匯入） ***/
+    /*** 實價登錄資料容器（初始為空，等自動 CSV 匯入） ***/
     const PRICE_DATA = [];
 
     /** 共用工具 **/
@@ -340,7 +340,7 @@
       `;
     }
 
-    /*** 實價登錄（條列 + 篩選 + 排序 + 匯出 + CSV匯入） ***/
+    /*** 實價登錄（條列 + 篩選 + 排序 + 分頁；自動載入 CSV） ***/
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:10, filters:{} };
 
     function ControlsPrice(){
@@ -386,26 +386,12 @@
             <input id="p-max-unit" type="number" placeholder="最高" min="0" style="width:120px">
           </div>
         </div>
-    
         <div class="btns">
           <button id="p-search" class="btn primary">搜尋</button>
           <button id="p-reset" class="btn ghost">重設</button>
         </div>
-    
-        <!-- 新增：CSV 操作列 -->
-        <div class="field" style="min-width:260px">
-          <label for="p-files">從本機匯入 CSV（可多選）</label>
-          <input id="p-files" type="file" accept=".csv" multiple>
-          <small style="color:var(--text-muted)">建議 UTF-8 編碼；內政部欄位抬頭可直接辨識。</small>
-        </div>
-        <div class="btns">
-          <button id="p-load" class="btn primary">匯入所選 CSV</button>
-          <button id="p-autoload" class="btn ghost" title="讀取 ./data/ 資料夾中預設清單">一鍵載入資料夾</button>
-          <button id="p-export" class="btn ghost">匯出目前結果</button>
-        </div>
       </section>`;
     }
-
 
     function PagePrice(){
       return `
@@ -436,7 +422,6 @@
         </div>
       `;
     }
-
 
     function headerCell(key, label){
       const arrow = priceState.sortKey===key ? (priceState.sortDir==='asc'?'▲':'▼') : '';
@@ -618,21 +603,7 @@
       return unique;
     }
 
-    async function loadCsvFiles(fileList) {
-      const files = Array.from(fileList || []);
-      if (!files.length) { alert('請先選擇 CSV 檔案'); return []; }
-      const texts = await Promise.all(files.map(f => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = err => reject(err);
-        reader.readAsText(f, 'utf-8');
-      })));
-      const all = [];
-      for (const t of texts) all.push(...csvTextToRecords(t));
-      return dedupRecords(all);
-    }
-
-    // 依你目前 data/ 資料夾的檔名
+    // 依你目前 data/ 資料夾的檔名（可自行調整）
     const PRESET_FILES = [
       "114年第二季_台北.csv",
       "114年第二季_新北.csv",
@@ -648,35 +619,34 @@
       "114年第三季_高雄.csv"
     ];
 
-
-    async function autoLoadFromPreset(){
+    /*** 靜默自動載入：進入 #/price 時從 ./data/ 批次抓取 CSV，合併後顯示 ***/
+    let PRICE_READY = false;
+    async function autoLoadFromPresetSilent(){
+      if (PRICE_READY) return;
       const base = "./data/";
-      const ok = [], fail = [];
       const texts = [];
       for (const name of PRESET_FILES){
         try{
           const res = await fetch(base + name);
-          if (!res.ok) throw new Error(res.status + " " + res.statusText);
-          const txt = await res.text();
-          texts.push(txt);
-          ok.push(name);
+          if (!res.ok) continue;
+          texts.push(await res.text());
         }catch(e){
-          fail.push(name);
-          console.warn("載入失敗:", name, e);
+          // 忽略讀不到的檔
         }
       }
-      if (!texts.length){ alert("預設清單皆無法載入，請確認檔案已放入 ./data/ 並同源可讀。"); return; }
+      if (!texts.length){
+        console.warn("預設清單皆無法載入，請確認 ./data/ 與檔名。");
+        return;
+      }
       const all = [];
       for (const t of texts) all.push(...csvTextToRecords(t));
       const merged = dedupRecords(all);
       PRICE_DATA.length = 0;
       PRICE_DATA.push(...merged);
-      priceState.page = 1; priceState.sortKey = 'date'; priceState.sortDir='desc';
-      applyPrice();
-      alert(`一鍵載入完成：成功 ${ok.length} 檔，失敗 ${fail.length} 檔；合併後 ${merged.length} 筆。${fail.length? "\\n未載入：" + fail.join("、") : ""}`);
+      PRICE_READY = true;
     }
 
-    /*** 實價：篩選/排序/分頁/匯出 ***/
+    /*** 實價：篩選/排序/分頁 ***/
     function getPriceFilters(){
       return priceState.filters = {
         city: ($('#p-city')?.value || '').trim(),
@@ -749,43 +719,11 @@
     function bindPriceControls(){
       $('#p-search')?.addEventListener('click', ()=>{ priceState.page=1; applyPrice(); });
       $('#p-reset')?.addEventListener('click', ()=>{
-        ['p-city','p-dist','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit','p-files'].forEach(id=>{
-          const el=$('#'+id); if(!el) return; if(el.type==='file') el.value=''; else el.value='';
+        ['p-city','p-dist','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit'].forEach(id=>{
+          const el=$('#'+id); if(!el) return; el.value='';
         });
         priceState.page=1; priceState.sortKey='date'; priceState.sortDir='desc'; applyPrice();
       });
-      $('#p-export')?.addEventListener('click', ()=>{
-        const f = priceState.filters || getPriceFilters();
-        const header = ['成交月','城市','行政區','路段','型態','建坪(坪)','單價(萬/坪)','總價(萬)','屋齡'];
-        const rows = PRICE_DATA.filter(r=>{
-          const okCity = !f.city || r.city.includes(f.city);
-          const okDist = !f.dist || r.district.includes(f.dist);
-          const okType = !f.type || r.type===f.type;
-          const okFrom = !f.from || r.date >= f.from;
-          const okTo   = !f.to   || r.date <= f.to;
-          const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
-          const okUnit  = r.unitWanPerPing >= f.minUnit && r.unitWanPerPing <= f.maxUnit;
-          return okCity && okDist && okType && okFrom && okTo && okTotal && okUnit;
-        }).map(r=>[r.date,r.city,r.district,r.addr,r.type,r.areaPing,r.unitWanPerPing,r.totalWan,r.age]);
-        const csv = [header, ...rows].map(row => row.map(v => `"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
-        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'price_records.csv'; a.click(); URL.revokeObjectURL(a.href);
-      });
-      $('#p-load')?.addEventListener('click', async ()=>{
-        try{
-          const files = $('#p-files')?.files;
-          const merged = await loadCsvFiles(files);
-          if (!merged.length) { alert('未從 CSV 匯入到有效筆數'); return; }
-          PRICE_DATA.length = 0; PRICE_DATA.push(...merged);
-          priceState.page = 1; priceState.sortKey = 'date'; priceState.sortDir = 'desc';
-          applyPrice();
-          alert(`CSV 匯入完成，共 ${merged.length} 筆。`);
-        }catch(err){
-          console.error(err);
-          alert('CSV 匯入發生錯誤，請檢查編碼與欄位抬頭（建議 UTF-8）。');
-        }
-      });
-      $('#p-autoload')?.addEventListener('click', autoLoadFromPreset);
     }
 
     /** 篩選與渲染（買屋） **/
@@ -837,7 +775,10 @@
       } else if(h.startsWith('#/price')){
         app.innerHTML = PagePrice();
         bindPriceControls();
-        applyPrice();
+
+        // ⬇️ 進入實價頁時自動從 ./data/ 載入 CSV，載完即渲染
+        autoLoadFromPresetSilent().then(()=>{ applyPrice(); });
+
       } else {
         app.innerHTML = PageHome();
         // 首頁搜尋 -> 買屋
@@ -890,10 +831,3 @@ ${item.desc}`);
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
