@@ -341,7 +341,7 @@
     }
 
     /*** 實價登錄（條列 + 篩選 + 排序 + 分頁；自動載入 CSV） ***/
-    const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:10, filters:{} };
+    const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:100, filters:{} };
 
     function ControlsPrice(){
       return `
@@ -831,3 +831,4 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
