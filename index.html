@@ -1061,48 +1061,34 @@
       const h = window.location.hash || '#/home';
       setActiveNav(h);
       const app = $('#app');
-      if(h.startsWith('#/buy')){
+    
+      if (h.startsWith('#/buy')) {
         app.innerHTML = PageBuy();
         $('#btn-search')?.addEventListener('click', applyFilters);
-        $('#btn-reset')?.addEventListener('click', ()=>{ $('#search-city').value=''; $('#min-price').value=''; $('#max-price').value=''; $('#type').value=''; $('#sort').value='relevance'; renderList(DATA); });
-        renderList(DATA);
-      } 
-        
-      else if(h.startsWith('#/compare')){
-        app.innerHTML = PageCompare();
-      } 
-        
-       
-        
-      else {
-        app.innerHTML = PageHome();
-        // 首頁搜尋 -> 買屋
-        $('#btn-search')?.addEventListener('click', ()=>{
-          const params = new URLSearchParams({
-            city: $('#search-city').value || '',
-            min: $('#min-price').value || '',
-            max: $('#max-price').value || '',
-            type: $('#type').value || '',
-            sort: $('#sort').value || 'relevance'
-          });
-          route('#/buy?' + params.toString());
+        $('#btn-reset')?.addEventListener('click', ()=>{
+          $('#search-city').value=''; $('#min-price').value='';
+          $('#max-price').value=''; $('#type').value='';
+          $('#sort').value='relevance';
+          renderList(DATA);
         });
-        $('#btn-reset')?.addEventListener('click', ()=>{ $('#search-city').value=''; $('#min-price').value=''; $('#max-price').value=''; $('#type').value=''; $('#sort').value='relevance'; updateCompareBadges(); });
-      }
-      
-      else if (h.startsWith('#/price')) {
-        // 1️⃣ 顯示實價登錄頁面
+        renderList(DATA);
+    
+      } else if (h.startsWith('#/compare')) {
+        app.innerHTML = PageCompare();
+    
+      } else if (h.startsWith('#/price')) {
+        // ✅ 實價登錄：只要這一個分支
         app.innerHTML = PagePrice();
         bindPriceControls();
-      
-        // 2️⃣ 從 ./data/ 載入 CSV 檔案
-        autoLoadFromPresetSilent().then(() => {
-          applyPrice(); // 顯示第一頁
-      
-          // 3️⃣ 綁定上一頁/下一頁按鈕（只綁一次）
+    
+        // 載入 CSV 後渲染
+        autoLoadFromPresetSilent().then(()=>{
+          applyPrice();  // 第一次渲染
+    
+          // 只綁一次按鈕事件
           const prevBtn = $('#price-prev');
           const nextBtn = $('#price-next');
-      
+    
           if (prevBtn) {
             prevBtn.onclick = () => {
               if (priceState.page > 1) {
@@ -1111,7 +1097,6 @@
               }
             };
           }
-      
           if (nextBtn) {
             nextBtn.onclick = () => {
               const totalPages = Math.ceil(PRICE_DATA.length / priceState.pageSize);
@@ -1122,7 +1107,45 @@
             };
           }
         });
+    
+      } else {
+        // 首頁
+        app.innerHTML = PageHome();
+        $('#btn-search')?.addEventListener('click', ()=>{
+          const params = new URLSearchParams({
+            city: $('#search-city').value || '',
+            min:  $('#min-price').value || '',
+            max:  $('#max-price').value || '',
+            type: $('#type').value || '',
+            sort: $('#sort').value || 'relevance'
+          });
+          route('#/buy?' + params.toString());
+        });
+        $('#btn-reset')?.addEventListener('click', ()=>{
+          $('#search-city').value=''; $('#min-price').value='';
+          $('#max-price').value=''; $('#type').value='';
+          $('#sort').value='relevance';
+          updateCompareBadges();
+        });
       }
+    
+      updateCompareBadges();
+    
+      // 帶查詢條件導入買屋
+      if (h.startsWith('#/buy')) {
+        const q = h.split('?')[1];
+        if (q) {
+          const p = new URLSearchParams(q);
+          if($('#search-city')) $('#search-city').value = p.get('city') || '';
+          if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
+          if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
+          if($('#type'))        $('#type').value        = p.get('type') || '';
+          if($('#sort'))        $('#sort').value        = p.get('sort') || 'relevance';
+          applyFilters();
+        }
+      }
+    }
+
 
 
       updateCompareBadges();
@@ -1162,6 +1185,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
