@@ -1072,11 +1072,13 @@
           renderList(DATA);
         });
         renderList(DATA);
-    
-      } else if (h.startsWith('#/compare')) {
+      } 
+        
+      else if (h.startsWith('#/compare')) {
         app.innerHTML = PageCompare();
-    
-      } else if (h.startsWith('#/price')) {
+      } 
+      
+      else if (h.startsWith('#/price')) {
         // ✅ 實價登錄：只要這一個分支
         app.innerHTML = PagePrice();
         bindPriceControls();
@@ -1107,8 +1109,9 @@
             };
           }
         });
-    
-      } else {
+        
+      } 
+      else {
         // 首頁
         app.innerHTML = PageHome();
         $('#btn-search')?.addEventListener('click', ()=>{
@@ -1145,9 +1148,7 @@
         }
       }
     }
-
-
-
+    
       updateCompareBadges();
       // 帶查詢條件導入買屋
       if(h.startsWith('#/buy')){
@@ -1185,6 +1186,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
