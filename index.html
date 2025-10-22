@@ -700,12 +700,15 @@
 
     function renderPrice(list){
       const tbody = $('#price-tbody'); if(!tbody) return;
+    
       const total = list.length;
-      const pages = Math.max(1, Math.ceil(total/priceState.pageSize));
+      const pages = Math.max(1, Math.ceil(total / priceState.pageSize));
       priceState.page = Math.min(priceState.page, pages);
-      const start = (priceState.page-1)*priceState.pageSize;
-      const rows = list.slice(start, start+priceState.pageSize);
-      tbody.innerHTML = rows.map(r=>`
+    
+      const start = (priceState.page - 1) * priceState.pageSize;
+      const rows = list.slice(start, start + priceState.pageSize);
+    
+      tbody.innerHTML = rows.map(r => `
         <tr>
           <td>${r.date}</td>
           <td>${r.city}</td>
@@ -715,23 +718,54 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
-          
-        </tr>`).join('');
-      const info = $('#price-info'); if(info) info.textContent = `共 ${total} 筆，頁 ${priceState.page}/${pages}`;
-      $('#price-prev')?.addEventListener('click', ()=>{ if(priceState.page>1){ priceState.page--; applyPrice(); }});
-      $('#price-next')?.addEventListener('click', ()=>{ if(priceState.page*priceState.pageSize<total){ priceState.page++; applyPrice(); }});
-      // 表頭排序
-      $$('#price-table thead th.sortable').forEach(th=>{
-        th.onclick = ()=>{
+        </tr>
+      `).join('');
+    
+      // 更新頁數資訊
+      const info = $('#price-info');
+      if (info) info.textContent = `共 ${total} 筆，頁 ${priceState.page}/${pages}`;
+    
+      // 只覆寫一次 handler（不會越綁越多造成一次跳好幾頁）
+      const prevBtn = $('#price-prev');
+      const nextBtn = $('#price-next');
+    
+      if (prevBtn) {
+        prevBtn.onclick = () => {
+          if (priceState.page > 1) {
+            priceState.page--;
+            applyPrice();   // 會再呼叫 renderPrice(list)
+          }
+        };
+        prevBtn.disabled = priceState.page <= 1;
+      }
+    
+      if (nextBtn) {
+        nextBtn.onclick = () => {
+          if (priceState.page * priceState.pageSize < total) {
+            priceState.page++;
+            applyPrice();
+          }
+        };
+        nextBtn.disabled = priceState.page >= pages;
+      }
+    
+      // 表頭排序（這裡保留原本作法）
+      $$('#price-table thead th.sortable').forEach(th => {
+        th.onclick = () => {
           const key = th.dataset.key;
-          if(priceState.sortKey===key){ priceState.sortDir = priceState.sortDir==='asc'?'desc':'asc'; }
-          else { priceState.sortKey=key; priceState.sortDir='asc'; }
+          if (priceState.sortKey === key) {
+            priceState.sortDir = priceState.sortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            priceState.sortKey = key;
+            priceState.sortDir = 'asc';
+          }
           $('#app').innerHTML = PagePrice();
           bindPriceControls();
           applyPrice();
         };
       });
     }
+
 
     function bindPriceControls(){
       $('#p-search')?.addEventListener('click', ()=>{ priceState.page=1; applyPrice(); });
@@ -778,6 +812,7 @@
 
     /** Router **/
     function route(hash){ window.location.hash = hash; }
+    
     function renderRoute(){
       const h = window.location.hash || '#/home';
       setActiveNav(h);
@@ -787,16 +822,15 @@
         $('#btn-search')?.addEventListener('click', applyFilters);
         $('#btn-reset')?.addEventListener('click', ()=>{ $('#search-city').value=''; $('#min-price').value=''; $('#max-price').value=''; $('#type').value=''; $('#sort').value='relevance'; renderList(DATA); });
         renderList(DATA);
-      } else if(h.startsWith('#/compare')){
+      } 
+        
+      else if(h.startsWith('#/compare')){
         app.innerHTML = PageCompare();
-      } else if(h.startsWith('#/price')){
-        app.innerHTML = PagePrice();
-        bindPriceControls();
-
-        // ⬇️ 進入實價頁時自動從 ./data/ 載入 CSV，載完即渲染
-        autoLoadFromPresetSilent().then(()=>{ applyPrice(); });
-
-      } else {
+      } 
+        
+       
+        
+      else {
         app.innerHTML = PageHome();
         // 首頁搜尋 -> 買屋
         $('#btn-search')?.addEventListener('click', ()=>{
@@ -811,6 +845,42 @@
         });
         $('#btn-reset')?.addEventListener('click', ()=>{ $('#search-city').value=''; $('#min-price').value=''; $('#max-price').value=''; $('#type').value=''; $('#sort').value='relevance'; updateCompareBadges(); });
       }
+      
+      else if (h.startsWith('#/price')) {
+        // 1️⃣ 顯示實價登錄頁面
+        app.innerHTML = PagePrice();
+        bindPriceControls();
+      
+        // 2️⃣ 從 ./data/ 載入 CSV 檔案
+        autoLoadFromPresetSilent().then(() => {
+          applyPrice(); // 顯示第一頁
+      
+          // 3️⃣ 綁定上一頁/下一頁按鈕（只綁一次）
+          const prevBtn = $('#price-prev');
+          const nextBtn = $('#price-next');
+      
+          if (prevBtn) {
+            prevBtn.onclick = () => {
+              if (priceState.page > 1) {
+                priceState.page--;
+                applyPrice();
+              }
+            };
+          }
+      
+          if (nextBtn) {
+            nextBtn.onclick = () => {
+              const totalPages = Math.ceil(PRICE_DATA.length / priceState.pageSize);
+              if (priceState.page < totalPages) {
+                priceState.page++;
+                applyPrice();
+              }
+            };
+          }
+        });
+      }
+
+
       updateCompareBadges();
       // 帶查詢條件導入買屋
       if(h.startsWith('#/buy')){
@@ -848,6 +918,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
