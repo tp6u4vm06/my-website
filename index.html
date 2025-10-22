@@ -1149,20 +1149,7 @@
       }
     }
     
-      updateCompareBadges();
-      // 帶查詢條件導入買屋
-      if(h.startsWith('#/buy')){
-        const q = h.split('?')[1];
-        if(q){
-          const p = new URLSearchParams(q);
-          if($('#search-city')) $('#search-city').value = p.get('city') || '';
-          if($('#min-price')) $('#min-price').value = p.get('min') || '';
-          if($('#max-price')) $('#max-price').value = p.get('max') || '';
-          if($('#type')) $('#type').value = p.get('type') || '';
-          if($('#sort')) $('#sort').value = p.get('sort') || 'relevance';
-          applyFilters();
-        }
-      }
+      
     
     window.addEventListener('hashchange', renderRoute);
     window.addEventListener('DOMContentLoaded', renderRoute);
@@ -1186,3 +1173,4 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
