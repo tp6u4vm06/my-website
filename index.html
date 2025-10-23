@@ -93,19 +93,13 @@
 
   <script>
     /** ========= 工具 ========= **/
+    const LISTINGS_DATA = [];
     const formatWan = (wan)=> wan.toLocaleString() + ' 萬';
     const $ = (sel, el=document)=> el.querySelector(sel);
     const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
     // 取代原本的 num()
-    function num(s){
-      if (s == null) return 0;
-      // 把非數字和小數點都去掉（包含 NTD、元、萬、空白、逗號）
-      const clean = String(s).replace(/[^\d.]/g,'');
-      return parseFloat(clean) || 0;
-    }
 
-
-    // CSV 解析（支援引號、逗號、換行）
+    // 簡易 CSV 解析（支援引號、逗號、換行）
     function parseCsv(text) {
       const lines = [];
       let row = [], cell = '', q=false;
@@ -126,6 +120,86 @@
       }
       if (cell!=='' || row.length){ row.push(cell); lines.push(row); }
       return lines;
+    }
+
+    
+    /** ====== 整合信義房屋 CSV 欄位對應 ====== **/
+
+    // 轉數字（去除逗號、萬、空白等）
+    function num(s){
+      if(!s) return 0;
+      return parseFloat(String(s).replace(/[^\d.]/g,'')) || 0;
+    }
+    
+    // 自動補上 https://
+    function normalizeUrl(u){
+      if(!u) return '';
+      const s = String(u).trim();
+      if(/^https?:\/\//i.test(s)) return s;
+      return 'https://' + s.replace(/^\/+/, '');
+    }
+    
+    // 欄位對應表
+    const COLS = {
+      link:     ["物件超連結","連結","網址","URL"],
+      title:    ["物件標題","標題","名稱"],
+      address:  ["地址","地點","地區"],
+      type:     ["房屋類型","型態","類別"],
+      age:      ["屋齡"],
+      areaPing: ["建坪","建物坪數"],
+      floor:    ["所在樓層","樓層"],
+      layout:   ["格局"],
+      desc:     ["額外資訊2","描述","特色"],
+      priceWan: ["目前價格","價格","總價","售價"]
+    };
+    
+    // 從欄位 map 取值的小工具
+    function getCell(map, names){
+      for(const n of names){
+        if(map[n] !== undefined && map[n] !== '') return map[n];
+      }
+      return '';
+    }
+    
+    // 對應轉換：把信義的每一列轉成標準物件
+    function listingRowToRecord(header, row){
+      const map = {};
+      header.forEach((h, i)=> map[String(h).trim()] = (row[i] ?? '').toString().trim());
+    
+      const link     = normalizeUrl(getCell(map, COLS.link));
+      const title    = getCell(map, COLS.title) || '未命名物件';
+      const addr     = getCell(map, COLS.address);
+      const type     = getCell(map, COLS.type) || '住宅';
+      const desc     = getCell(map, COLS.desc);
+      const areaPing = num(getCell(map, COLS.areaPing));
+      const floor    = getCell(map, COLS.floor);
+      const layout   = getCell(map, COLS.layout);
+      const age      = getCell(map, COLS.age);
+      const priceStr = getCell(map, COLS.priceWan);
+    
+      // 信義格式「2,188萬」→ 去萬字再轉數字
+      const priceWan = num(priceStr);
+    
+      if(!addr || !priceWan) return null;
+    
+      // 拆出城市與行政區
+      const m = addr.match(/^(.*?[縣市])(.*?[區鄉鎮市])(.*)$/);
+      const city = m ? m[1] : '';
+      const district = m ? m[2] : '';
+    
+      return {
+        id: undefined,
+        city,
+        type,
+        title,
+        img: './images/placeholder.jpg',
+        desc: `${layout ? layout + '｜' : ''}${floor ? floor + '｜' : ''}${age ? '屋齡'+age+'｜' : ''}${desc}`,
+        priceWan,
+        _district: district,
+        _addr: addr,
+        areaPing,
+        link
+      };
     }
 
     /** ========= 比價（沿用） ========= **/
@@ -161,94 +235,6 @@
       "1_信義房屋_Taichung_P20.csv",
       "1_信義房屋_Keelung_P20.csv"
     ];
-
-    const LISTINGS_DATA = [];
-
-    const COLS = {
-      city:     ["city","城市","縣市","縣市別"],
-      district: ["district","行政區","區","鄉鎮市區"],
-      address:  ["地址","路段","門牌","土地位置建物門牌","addr"],
-      type:     ["型態","房屋型態","類型","type","建物型態"],
-      title:    ["標題","物件名稱","名稱","title","name","社區名稱"],
-      img:      ["圖片","封面圖","img","image","photo","圖片URL","圖片連結"],
-      desc:     ["描述","備註","特色","亮點","desc","summary","簡介"],
-      areaPing: ["建坪(坪)","建物坪數","建坪","坪數","areaPing","建物移轉總面積(坪)"],
-    
-      // 價格（單位：萬）
-      priceWan: ["總價(萬)","總價(萬元)","開價(萬)","開價(萬元)","價格(萬)","價格(萬元)","priceWan","price_wan","總價萬","總價萬_含車位","售價(萬)","售價(萬元)"],
-      // 價格（單位：元）→ 自動轉萬
-      priceWanYuan: ["總價(元)","總價元","售價(元)","price","totalPrice","總價"]
-    };
-
-    function getCell(map, names){ for(const n of names){ if(n in map && map[n] !== "") return map[n]; } return ""; }
-    function normalizeUrl(u){
-      if(!u) return "";
-      const s = String(u).trim();
-      if(!s) return "";
-      if(/^https?:\/\//i.test(s)) return s;
-      // 若是站內相對路徑，就直接回傳（避免誤補 https 導致 404）
-      if (s.startsWith("./") || s.startsWith("/") ) return s;
-      return "https://" + s;
-    }
-
-    function listingRowToRecord(header, row){
-      const map = {};
-      header.forEach((h, i) => map[String(h).trim()] = (row[i] ?? '').toString().trim());
-    
-      const city     = getCell(map, COLS.city);
-      const district = getCell(map, COLS.district);
-      const addr     = getCell(map, COLS.address);
-      const type     = getCell(map, COLS.type) || "大樓";
-      const title    = getCell(map, COLS.title) || (city && district ? `${city}${district}物件` : "待售物件");
-      const img      = getCell(map, COLS.img) || "./images/placeholder.jpg";
-      const desc     = getCell(map, COLS.desc) || (addr || "—");
-      const areaPing = num(getCell(map, COLS.areaPing));
-    
-      // 價格：先嘗試「萬」，沒有就用「元」/10000
-      let priceWan = num(getCell(map, COLS.priceWan));
-      if (!priceWan) {
-        const yuan = num(getCell(map, COLS.priceWanYuan));
-        if (yuan) priceWan = Math.round(yuan / 10000); // 元→萬
-      }
-    
-      // 連結
-      const linkRaw = getCell(map, COLS.link || ["物件超連結","物件連結","連結","網址","link","url"]);
-      const link = normalizeUrl(linkRaw);
-    
-      // 若 city/district 缺，嘗試從地址拆出
-      function splitCityDist(s){
-        if(!s) return { city:'', district:'', road: s || '' };
-        const m = s.match(/^(.*?[縣市])(.*?[區鄉鎮市])(.*)$/);
-        if (m) return { city: m[1].trim(), district: m[2].trim(), road: m[3].trim() };
-        const mCity = s.match(/^(.*?[縣市])(.*)$/);
-        if (mCity) return { city: mCity[1].trim(), district: '', road: mCity[2].trim() };
-        return { city:'', district:'', road: s.trim() };
-      }
-      let _city = city, _district = district;
-      if(!city || !district){
-        const sp = splitCityDist(addr);
-        if(!_city && sp.city) _city = sp.city;
-        if(!_district && sp.district) _district = sp.district;
-      }
-    
-      // 無地點資訊且無地址，或沒有價格，就跳過
-      if(!_city && !_district && !addr) return null;
-      if(!priceWan) return null;
-    
-      return {
-        id: undefined,
-        city: _city || "",
-        type,
-        title,
-        img,
-        desc,
-        priceWan,
-        _district,
-        _addr: addr,
-        areaPing: areaPing || undefined,
-        link
-      };
-    }
 
 
     function listingsCsvToRecords(text){
@@ -288,7 +274,7 @@
         }catch(e){}
       }
       if(!texts.length){
-        console.warn("找不到待售 CSV，請確認 ./data/listings/ 與檔名。");
+        console.warn("找不到待售 CSV，請確認 ./data/ 與檔名。");
         return;
       }
       const all = [];
@@ -916,6 +902,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
