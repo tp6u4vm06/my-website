@@ -305,7 +305,7 @@
           <div class="actions">
             <button class="btn ghost" onclick="viewDetail(${item.id})">更多</button>
             <button class="btn" data-role="compare" data-id="${item.id}" onclick="toggleCompare(${item.id})">${ inCompare(item.id) ? '取消比較' : '加入比較' }</button>
-            // <button class="btn primary" onclick="contactAgent(${item.id})">我要買</button>
+            
             ${ item.link ? `<a class="btn primary" href="${item.link}" target="_blank" rel="noopener">連結</a>` : '' }
           </div>
         </article>`;
@@ -924,6 +924,7 @@
   </script>
 </body>
 </html>
+
 
 
 
