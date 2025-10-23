@@ -96,7 +96,14 @@
     const formatWan = (wan)=> wan.toLocaleString() + ' 萬';
     const $ = (sel, el=document)=> el.querySelector(sel);
     const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
-    function num(s){ if (s==null) return 0; return parseFloat(String(s).replace(/[\s,]/g,'')) || 0; }
+    // 取代原本的 num()
+    function num(s){
+      if (s == null) return 0;
+      // 把非數字和小數點都去掉（包含 NTD、元、萬、空白、逗號）
+      const clean = String(s).replace(/[^\d.]/g,'');
+      return parseFloat(clean) || 0;
+    }
+
 
     // CSV 解析（支援引號、逗號、換行）
     function parseCsv(text) {
@@ -158,18 +165,21 @@
     const LISTINGS_DATA = [];
 
     const COLS = {
-      city: ["city","城市","縣市","縣市別"],
+      city:     ["city","城市","縣市","縣市別"],
       district: ["district","行政區","區","鄉鎮市區"],
-      address: ["地址","路段","門牌","土地位置建物門牌","addr"],
-      type: ["型態","房屋型態","類型","type"],
-      priceWan: ["總價(萬)","開價(萬)","價格(萬)","priceWan","price_wan","總價萬","總價萬_含車位","開價萬"],
-      title: ["標題","物件名稱","名稱","title","name"],
-      img: ["圖片","封面圖","img","image","photo","圖片URL"],
-      desc: ["描述","備註","特色","亮點","desc","summary"],
+      address:  ["地址","路段","門牌","土地位置建物門牌","addr"],
+      type:     ["型態","房屋型態","類型","type","建物型態"],
+      title:    ["標題","物件名稱","名稱","title","name","社區名稱"],
+      img:      ["圖片","封面圖","img","image","photo","圖片URL","圖片連結"],
+      desc:     ["描述","備註","特色","亮點","desc","summary","簡介"],
       areaPing: ["建坪(坪)","建物坪數","建坪","坪數","areaPing","建物移轉總面積(坪)"],
-      // ⭐ 新增：物件超連結
-      link: ["物件超連結","物件連結","連結","網址","link","url"]
+    
+      // 價格（單位：萬）
+      priceWan: ["總價(萬)","總價(萬元)","開價(萬)","開價(萬元)","價格(萬)","價格(萬元)","priceWan","price_wan","總價萬","總價萬_含車位","售價(萬)","售價(萬元)"],
+      // 價格（單位：元）→ 自動轉萬
+      priceWanYuan: ["總價(元)","總價元","售價(元)","price","totalPrice","總價"]
     };
+
     function getCell(map, names){ for(const n of names){ if(n in map && map[n] !== "") return map[n]; } return ""; }
     function normalizeUrl(u){
       if(!u) return "";
@@ -184,19 +194,28 @@
     function listingRowToRecord(header, row){
       const map = {};
       header.forEach((h, i) => map[String(h).trim()] = (row[i] ?? '').toString().trim());
-
-      const city = getCell(map, COLS.city);
+    
+      const city     = getCell(map, COLS.city);
       const district = getCell(map, COLS.district);
-      const addr = getCell(map, COLS.address);
-      const type = getCell(map, COLS.type) || "大樓";
-      const title = getCell(map, COLS.title) || (city && district ? `${city}${district}物件` : "待售物件");
-      const priceWan = num(getCell(map, COLS.priceWan));
-      const img = getCell(map, COLS.img) || "./images/placeholder.jpg";
-      const desc = getCell(map, COLS.desc) || (addr || "—");
+      const addr     = getCell(map, COLS.address);
+      const type     = getCell(map, COLS.type) || "大樓";
+      const title    = getCell(map, COLS.title) || (city && district ? `${city}${district}物件` : "待售物件");
+      const img      = getCell(map, COLS.img) || "./images/placeholder.jpg";
+      const desc     = getCell(map, COLS.desc) || (addr || "—");
       const areaPing = num(getCell(map, COLS.areaPing));
-      const linkRaw = getCell(map, COLS.link);
+    
+      // 價格：先嘗試「萬」，沒有就用「元」/10000
+      let priceWan = num(getCell(map, COLS.priceWan));
+      if (!priceWan) {
+        const yuan = num(getCell(map, COLS.priceWanYuan));
+        if (yuan) priceWan = Math.round(yuan / 10000); // 元→萬
+      }
+    
+      // 連結
+      const linkRaw = getCell(map, COLS.link || ["物件超連結","物件連結","連結","網址","link","url"]);
       const link = normalizeUrl(linkRaw);
-
+    
+      // 若 city/district 缺，嘗試從地址拆出
       function splitCityDist(s){
         if(!s) return { city:'', district:'', road: s || '' };
         const m = s.match(/^(.*?[縣市])(.*?[區鄉鎮市])(.*)$/);
@@ -211,10 +230,11 @@
         if(!_city && sp.city) _city = sp.city;
         if(!_district && sp.district) _district = sp.district;
       }
-
+    
+      // 無地點資訊且無地址，或沒有價格，就跳過
       if(!_city && !_district && !addr) return null;
       if(!priceWan) return null;
-
+    
       return {
         id: undefined,
         city: _city || "",
@@ -226,9 +246,10 @@
         _district,
         _addr: addr,
         areaPing: areaPing || undefined,
-        link // ⭐ 帶入連結
+        link
       };
     }
+
 
     function listingsCsvToRecords(text){
       const rows = parseCsv(text).filter(r => r.length && r.some(x => x && x.trim() !== ''));
@@ -895,5 +916,6 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
