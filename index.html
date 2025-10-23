@@ -170,7 +170,6 @@
       const title    = getCell(map, COLS.title) || '未命名物件';
       const addr     = getCell(map, COLS.address);
       const type     = getCell(map, COLS.type) || '住宅';
-      const desc     = getCell(map, COLS.desc);
       const areaPing = num(getCell(map, COLS.areaPing));
       const floor    = getCell(map, COLS.floor);
       const layout   = getCell(map, COLS.layout);
@@ -179,7 +178,6 @@
     
       // 信義格式「2,188萬」→ 去萬字再轉數字
       const priceWan = num(priceStr);
-    
       if(!addr || !priceWan) return null;
     
       // 拆出城市與行政區
@@ -193,7 +191,7 @@
         type,
         title,
         img: './images/placeholder.jpg',
-        desc: `${layout ? layout + '｜' : ''}${floor ? floor + '｜' : ''}${age ? '屋齡'+age+'｜' : ''}${desc}`,
+        desc: `${layout ? layout + '｜' : ''}${floor ? floor + '｜' : ''}${age ? '屋齡' + age : ''}`,
         priceWan,
         _district: district,
         _addr: addr,
@@ -924,6 +922,7 @@
   </script>
 </body>
 </html>
+
 
 
 
