@@ -300,8 +300,8 @@
               </div>
               <div class="price">NT$ ${formatWan(item.priceWan)}</div>
             </div>
-            <div class="desc">${item.desc}</div>
           </div>
+
           <div class="actions">
             <button class="btn ghost" onclick="viewDetail(${item.id})">更多</button>
             <button class="btn" data-role="compare" data-id="${item.id}" onclick="toggleCompare(${item.id})">${ inCompare(item.id) ? '取消比較' : '加入比較' }</button>
@@ -887,12 +887,34 @@
       const item = LISTINGS_DATA.find(d=>d.id===id);
       if(!item) return;
       const where = item.city + (item._district ? " " + item._district : "");
-      alert(`${item.title}
-地點：${where}
-價格：NT$ ${item.priceWan.toLocaleString()} 萬
-
-${item.desc}`);
+      
+      // 建立 Modal HTML
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.inset = '0';
+      modal.style.background = 'rgba(0,0,0,0.6)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9999';
+      
+      modal.innerHTML = `
+        <div style="background:#1f1f1f; color:#f0f0f0; padding:24px; border-radius:12px; max-width:480px; width:90%; box-shadow:0 8px 24px rgba(0,0,0,.5);">
+          <h3 style="margin-top:0; font-size:20px;">${item.title}</h3>
+          <p><strong>地點：</strong>${where}</p>
+          <p><strong>房屋類型：</strong>${item.type}</p>
+          <p><strong>價格：</strong>NT$ ${item.priceWan.toLocaleString()} 萬</p>
+          <p><strong>詳細資訊：</strong><br>${item.desc || '—'}</p>
+          <div style="text-align:right; margin-top:16px;">
+            <button style="padding:8px 14px; border:0; border-radius:8px; background:#c0c0c0; color:#121212; font-weight:700; cursor:pointer;">關閉</button>
+          </div>
+        </div>
+      `;
+    
+      modal.querySelector('button').onclick = () => modal.remove();
+      document.body.appendChild(modal);
     }
+
     function contactAgent(id){
       const item = LISTINGS_DATA.find(d=>d.id===id);
       if(!item) return;
@@ -902,6 +924,7 @@ ${item.desc}`);
   </script>
 </body>
 </html>
+
 
 
 
