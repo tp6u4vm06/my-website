@@ -358,6 +358,7 @@
     }
   </style>
 </head>
+  
 <body>
   <!-- 導覽列 -->
   <header class="nav" role="navigation" aria-label="主選單">
@@ -490,7 +491,7 @@
       };
     }
 
-    /** ========= 比價（沿用） ========= **/
+    /** ========= 比價 ========= **/
     const COMPARE_KEY = 'eg_compare_ids';
     function getCompareIds(){ try { return JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]'); } catch(e){ return []; } }
     function setCompareIds(ids){ localStorage.setItem(COMPARE_KEY, JSON.stringify(ids)); }
@@ -506,7 +507,7 @@
       });
     }
 
-    /** ========= 新建案（保留） ========= **/
+    /** ========= 新建案 ========= **/
     const NEW_PROJECTS = [
       { id:101, name:"永康真", builder:"永康建建設", city:"新北市板橋區", priceWanFrom:2061, img:"./images/id101.jpg", highlights:["府中雙城心","板南線450米","醇靜宅"], linkBrochure:"https://newhouse.591.com.tw/138134" },
       { id:102, name:"信義誠家", builder:"誠家興建設", city:"台北市信義區", priceWanFrom:92,  img:"./images/id102.jpg", highlights:["商圈學區5分鐘"], linkBrochure:"https://newhouse.591.com.tw/136360" },
@@ -530,7 +531,6 @@
       "永慶房屋_基隆市_20251012_211004.csv",
       "永慶房屋_新北市_20251012_195556.csv",
     ];
-
 
     function listingsCsvToRecords(text){
       const rows = parseCsv(text).filter(r => r.length && r.some(x => x && x.trim() !== ''));
@@ -579,7 +579,6 @@
       LISTINGS_DATA.push(...merged);
       LISTINGS_READY = true;
     
-      // ✅ 加在這裡！
       console.log("[LISTINGS] 已載入", LISTINGS_DATA.length, "筆資料");
       let PAGE_STATE = { page: 1, pageSize: 100 };
       updateCompareBadges();
@@ -1268,6 +1267,3 @@
   </script>
 </body>
 </html>
-
-
-
