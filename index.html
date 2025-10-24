@@ -543,6 +543,10 @@
       LISTINGS_DATA.length = 0;
       LISTINGS_DATA.push(...merged);
       LISTINGS_READY = true;
+    
+      // ✅ 加在這裡！
+      console.log("[LISTINGS] 已載入", LISTINGS_DATA.length, "筆資料");
+    
       updateCompareBadges();
     }
 
@@ -1186,5 +1190,6 @@
   </script>
 </body>
 </html>
+
 
 
