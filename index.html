@@ -548,9 +548,12 @@
           <div class="content">
             <div class="meta">
               <div>
-                <div style="font-weight:800">${item.title}</div>
+                /* csv[物件標題] */
+                <div style="font-weight:600">${item.title}</div>
+                /* csv[城市][地區][房屋類型] */
                 <div class="tags">${cityDist} • ${item.type}</div>
               </div>
+              /* 價格籤 */
               <div class="price" style="font-size:12px;">NT$ ${formatWan(item.priceWan)}</div>
             </div>
           </div>
@@ -1176,6 +1179,7 @@
   </script>
 </body>
 </html>
+
 
 
 
