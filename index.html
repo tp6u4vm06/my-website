@@ -546,7 +546,7 @@
     
       // ✅ 加在這裡！
       console.log("[LISTINGS] 已載入", LISTINGS_DATA.length, "筆資料");
-    
+      let PAGE_STATE = { page: 1, pageSize: 100 };
       updateCompareBadges();
     }
 
@@ -742,6 +742,7 @@
       };
     }
     function applyFilters(){
+      PAGE_STATE.page = 1;   // 篩選時自動回到第 1 頁
       const grid = $('#grid'); if(!grid) return;
       const f = getFilters();
       let results = LISTINGS_DATA.filter(d=>{
@@ -756,15 +757,57 @@
       renderList(results);
     }
     function renderList(items){
-      const grid = $('#grid'); const noResults = $('#no-results');
+      const grid = $('#grid'); 
+      const noResults = $('#no-results');
       if(!grid) return;
-      grid.innerHTML = '';
-      if(!items.length){ noResults && (noResults.style.display='block'); return; }
-      else { noResults && (noResults.style.display='none'); }
-      grid.innerHTML = items.map(card).join('');
+    
+      // 如果沒有資料
+      if(!items.length){ 
+        noResults && (noResults.style.display='block'); 
+        grid.innerHTML = ''; 
+        $('#pager-buy')?.remove(); // 移除舊的分頁
+        return; 
+      } else { 
+        noResults && (noResults.style.display='none'); 
+      }
+    
+      // 分頁處理
+      const total = items.length;
+      const pages = Math.ceil(total / PAGE_STATE.pageSize);
+      PAGE_STATE.page = Math.min(PAGE_STATE.page, pages);
+      const start = (PAGE_STATE.page - 1) * PAGE_STATE.pageSize;
+      const end = start + PAGE_STATE.pageSize;
+      const pageItems = items.slice(start, end);
+    
+      // 渲染卡片
+      grid.innerHTML = pageItems.map(card).join('');
+    
+      // 更新頁碼顯示
+      let pager = $('#pager-buy');
+      if(!pager){
+        pager = document.createElement('div');
+        pager.id = 'pager-buy';
+        pager.className = 'pager';
+        grid.insertAdjacentElement('afterend', pager);
+      }
+    
+      pager.innerHTML = `
+        <span style="margin-right:auto;color:var(--text-muted);">
+          共 ${total} 筆，第 ${PAGE_STATE.page} / ${pages} 頁
+        </span>
+        <button class="btn ghost" id="btn-prev-buy" ${PAGE_STATE.page<=1?'disabled':''}>上一頁</button>
+        <button class="btn primary" id="btn-next-buy" ${PAGE_STATE.page>=pages?'disabled':''}>下一頁</button>
+      `;
+    
+      $('#btn-prev-buy')?.addEventListener('click', ()=>{
+        if(PAGE_STATE.page>1){ PAGE_STATE.page--; renderList(items); }
+      });
+      $('#btn-next-buy')?.addEventListener('click', ()=>{
+        if(PAGE_STATE.page<pages){ PAGE_STATE.page++; renderList(items); }
+      });
+    
       updateCompareBadges();
     }
-
     /** ========= 實價登錄（維持原功能） ========= **/
     const PRICE_DATA = [];
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:100, filters:{} };
@@ -1190,6 +1233,7 @@
   </script>
 </body>
 </html>
+
 
 
 
