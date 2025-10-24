@@ -349,6 +349,7 @@
   <script>
     /** ========= 工具 ========= **/
     const LISTINGS_DATA = [];
+    let PAGE_STATE = { page: 1, pageSize: 100 };
     const formatWan = (wan)=> wan.toLocaleString() + ' 萬';
     const $ = (sel, el=document)=> el.querySelector(sel);
     const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
@@ -358,7 +359,6 @@
     function parseCsv(text) {
       const lines = [];
       let row = [], cell = '', q=false;
-      let PAGE_STATE = { page: 1, pageSize: 100 };
       for (let i=0;i<text.length;i++){
         const ch = text[i], next = text[i+1];
         if (ch === '"'){
@@ -1234,8 +1234,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
