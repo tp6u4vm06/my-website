@@ -358,6 +358,7 @@
     function parseCsv(text) {
       const lines = [];
       let row = [], cell = '', q=false;
+      let PAGE_STATE = { page: 1, pageSize: 100 };
       for (let i=0;i<text.length;i++){
         const ch = text[i], next = text[i+1];
         if (ch === '"'){
@@ -742,7 +743,7 @@
       };
     }
     function applyFilters(){
-      PAGE_STATE.page = 1;   // 篩選時自動回到第 1 頁
+      PAGE_STATE.page = 1;  // 篩選時自動回到第 1 頁
       const grid = $('#grid'); if(!grid) return;
       const f = getFilters();
       let results = LISTINGS_DATA.filter(d=>{
@@ -1233,6 +1234,7 @@
   </script>
 </body>
 </html>
+
 
 
 
