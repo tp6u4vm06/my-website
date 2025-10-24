@@ -170,11 +170,6 @@
       display:flex; 
       gap:8px; 
     }
-    .grid { 
-      display:grid; 
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-      gap:20px; 
-    }
     .card { 
       background:var(--card); 
       color: var(--text-main); 
@@ -330,7 +325,30 @@
       font-size:16px;
       border-radius:10px;
     }
+    /* --- 買屋卡片排版：桌機4張 / 平板3張 / 手機2張 --- */
 
+    /* 預設（桌機） */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 一行4張卡片 */
+      gap: 20px;
+    }
+    
+    /* 平板：螢幕 ≤ 1024px 時，一行3張 */
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+    }
+    
+    /* 手機：螢幕 ≤ 760px 時，一行2張 */
+    @media (max-width: 760px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1243,4 +1261,5 @@
   </script>
 </body>
 </html>
+
 
