@@ -1312,15 +1312,16 @@
       window.location.href = `mailto:agent@example.com?subject=我要諮詢%20${name}&body=您好，我想了解 ${name} 的更多資訊。`;
     }
 
-    function clearCompareAndReload(){
-      setCompareIds([]);        // 清空比價清單（localStorage）
-      updateCompareBadges();    // 更新導覽列徽章
-      window.location.reload(); // 直接重新整理頁面
+    function clearCompareSoft(){
+      setCompareIds([]);
+      updateCompareBadges();
+      route('#/compare');  // 切回同頁
+      renderRoute();       // 直接重畫畫面
     }
-
   </script>
 </body>
 </html>
+
 
 
 
