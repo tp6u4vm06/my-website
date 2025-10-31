@@ -757,33 +757,52 @@
     function PageCompare(){
       const ids = getCompareIds();
       const items = LISTINGS_DATA.filter(d=> ids.includes(d.id));
+    
+      // 沒選擇任何物件時顯示提示
+      if (!items.length) {
+        return `
+          <h2 class="section-title">房屋比價</h2>
+          <div style="color:var(--text-muted);margin:20px 0;">尚未加入任何物件。</div>
+          <div class="pager">
+            <button class="btn primary" onclick="route('#/buy')">回到買屋列表</button>
+          </div>
+        `;
+      }
+    
+      // 表格內容：每筆物件一列
+      const rows = items.map(it => `
+        <tr>
+          <td><div class="img" style="height:100px;background-image:url('${it.img}')"></div></td>
+          <td>${it.title}</td>
+          <td>${it.city}${it._district ? ' ' + it._district : ''}</td>
+          <td>${it.type}</td>
+          <td>NT$ ${formatWan(it.priceWan)}</td>
+          <td>${it.desc || '—'}</td>
+          <td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener">前往</a>` : '—' }</td>
+          <td>
+            <button class="btn ghost" onclick="toggleCompare(${it.id}); route('#/compare')">移除</button>
+            <button class="btn primary" onclick="contactAgent(${it.id})">洽詢</button>
+          </td>
+        </tr>
+      `).join('');
+    
       return `
         <h2 class="section-title">房屋比價（${ids.length}）</h2>
         <div class="table-wrap">
           <table aria-label="比價表">
             <thead>
               <tr>
-                <th>項目</th>
-                ${items.map(it=>`<th>${it.title}</th>`).join('')}
+                <th>圖片</th>
+                <th>標題</th>
+                <th>地點</th>
+                <th>型態</th>
+                <th>價格</th>
+                <th>特色</th>
+                <th>連結</th>
+                <th>操作</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>圖片</td>
-                ${items.map(it => '<td><div class="img" style="height:120px;background-image:url(\'' + it.img + '\')"></div></td>').join('')}
-              </tr>
-              <tr><td>地點</td>${items.map(it=>`<td>${it.city}${it._district?' '+it._district:''}</td>`).join('')}</tr>
-              <tr><td>型態</td>${items.map(it=>`<td>${it.type}</td>`).join('')}</tr>
-              <tr><td>價格</td>${items.map(it=>`<td>NT$ ${formatWan(it.priceWan)}</td>`).join('')}</tr>
-              <tr><td>特色</td>${items.map(it=>`<td>${it.desc}</td>`).join('')}</tr>
-              <tr>
-                <td>連結</td>
-                ${items.map(it=>`<td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener">前往</a>` : '—' }</td>`).join('')}
-              </tr>
-              <tr>
-                <td></td>${items.map(it=>`<td><button class="btn ghost" onclick="toggleCompare(${it.id}); route('#/compare')">移除</button> <button class="btn primary" onclick="contactAgent(${it.id})">洽詢</button></td>`).join('')}
-              </tr>
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
         </div>
         <div class="pager">
@@ -1295,6 +1314,7 @@
   </script>
 </body>
 </html>
+
 
 
 
