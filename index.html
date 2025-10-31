@@ -422,6 +422,15 @@
       return parseFloat(String(s).replace(/[^\d.]/g,'')) || 0;
     }
     
+    /* === 把 #NAME? / N/A / — 等無效字串視為空字串 === */
+    const BAD_STR = /^\s*(#NAME\?|N\/A|NA|N\.A\.|—|-|無|null|undefined)\s*$/i;
+    function cleanVal(s){
+      if(s == null) return '';
+      const t = String(s).trim();
+      if(!t || BAD_STR.test(t)) return '';
+      return t;
+    }
+    
     // 自動補上 https://
     function normalizeUrl(u){
       if(!u) return '';
@@ -432,22 +441,24 @@
     
     // 欄位對應表
     const COLS = {
-      link:     ["物件超連結","連結","網址","URL"],
+      link:     ["物件超連結","物件連結","房屋連結","物件網址","連結","網址","URL"],
       title:    ["物件標題","標題","名稱"],
-      address:  ["地址","地點","地區"],
+      address:  ["地址","地點","地區","完整地址","門牌"],
       type:     ["房屋類型","型態","類別"],
-      age:      ["屋齡"],
-      areaPing: ["建坪","建物坪數"],
+      age:      ["屋齡","屋齡(年)","建築完成年月"],
+      areaPing: ["建坪","建物坪數","權狀坪數","建築面積(坪)"],
       floor:    ["所在樓層","樓層"],
-      layout:   ["格局"],
-      desc:     ["額外資訊2","描述","特色"],
-      priceWan: ["目前價格","價格","總價","售價"]
+      layout:   ["格局","房廳衛","房/廳/衛"],
+      desc:     ["額外資訊2","描述","特色","備註"]
     };
     
     // 從欄位 map 取值的小工具
     function getCell(map, names){
       for(const n of names){
-        if(map[n] !== undefined && map[n] !== '') return map[n];
+        if(map[n] !== undefined){
+          const v = cleanVal(map[n]);
+          if(v) return v;
+        }
       }
       return '';
     }
@@ -457,24 +468,38 @@
       const map = {};
       header.forEach((h, i)=> map[String(h).trim()] = (row[i] ?? '').toString().trim());
     
-      const link     = normalizeUrl(getCell(map, COLS.link));
+      // 先取欄位（已自動清除 #NAME?/N/A）
+      const linkRaw  = getCell(map, COLS.link);
       const title    = getCell(map, COLS.title) || '未命名物件';
       const addr     = getCell(map, COLS.address);
       const type     = getCell(map, COLS.type) || '住宅';
       const areaPing = num(getCell(map, COLS.areaPing));
       const floor    = getCell(map, COLS.floor);
       const layout   = getCell(map, COLS.layout);
-      const age      = getCell(map, COLS.age);
+      const ageTxt   = getCell(map, COLS.age);         // 可能是數字或年月
+      const extra    = getCell(map, COLS.desc);        // 若 CSV 有「特色/描述」就也帶上
       const priceStr = getCell(map, COLS.priceWan);
     
-      // 信義格式「2,188萬」→ 去萬字再轉數字
+      // 價格（信義/永慶常見：2,188萬）
       const priceWan = num(priceStr);
       if(!addr || !priceWan) return null;
     
-      // 拆出城市與行政區
+      // 自動補上 https:// 開頭
+      const link = normalizeUrl(linkRaw);
+    
+      // 拆城市/行政區
       const m = addr.match(/^(.*?[縣市])(.*?[區鄉鎮市])(.*)$/);
       const city = m ? m[1] : '';
       const district = m ? m[2] : '';
+    
+      // 年齡字串（如果 ageTxt 可轉數字，就顯示「屋齡X年」；否則直接略過）
+      let agePart = '';
+      const ageNum = num(ageTxt);
+      if(ageNum > 0) agePart = `屋齡${ageNum}年`;
+    
+      // 組合特色（自動過濾空字串）
+      const descParts = [layout, floor, agePart, extra].filter(Boolean);
+      const desc = descParts.length ? descParts.join('｜') : '—';
     
       return {
         id: undefined,
@@ -482,15 +507,14 @@
         type,
         title,
         img: './images/placeholder.jpg',
-        desc: `${layout ? layout + '｜' : ''}${floor ? floor + '｜' : ''}${age ? '屋齡' + age : ''}`,
+        desc,                     // ← 乾淨的「特色」內容
         priceWan,
         _district: district,
         _addr: addr,
         areaPing,
-        link
+        link                     // ← 連結正規化後放進來
       };
     }
-
     /** ========= 比價 ========= **/
     const COMPARE_KEY = 'eg_compare_ids';
     function getCompareIds(){ try { return JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]'); } catch(e){ return []; } }
@@ -525,7 +549,11 @@
       "1_信義房屋_Keelung_P20.csv",
       "2_永慶房屋_台北市_P20.CSV",
       "2_永慶房屋_新北市_P20.csv",
-      
+      "永慶房屋_台北市.csv",
+      "永慶房屋_台北市_20251012_161153.csv",
+      "永慶房屋_桃園市_20251013_201243.csv",
+      "永慶房屋_基隆市_20251012_211004.csv",
+      "永慶房屋_新北市_20251012_195556.csv",
     ];
 
     function listingsCsvToRecords(text){
@@ -1263,4 +1291,5 @@
   </script>
 </body>
 </html>
+
 
