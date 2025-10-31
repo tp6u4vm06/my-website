@@ -778,11 +778,8 @@
           <td>${it.type}</td>
           <td>NT$ ${formatWan(it.priceWan)}</td>
           <td>${it.desc || '—'}</td>
-          <td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener">前往</a>` : '—' }</td>
-          <td>
-            <button class="btn ghost" onclick="toggleCompare(${it.id}); route('#/compare')">移除</button>
-            <button class="btn primary" onclick="contactAgent(${it.id})">洽詢</button>
-          </td>
+          <td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener" font-size="14px">前往</a>` : '—' }</td>
+          
         </tr>
       `).join('');
     
@@ -799,7 +796,7 @@
                 <th>價格</th>
                 <th>特色</th>
                 <th>連結</th>
-                <th>操作</th>
+                
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -1332,6 +1329,7 @@
   </script>
 </body>
 </html>
+
 
 
 
