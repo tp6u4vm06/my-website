@@ -806,7 +806,7 @@
           </table>
         </div>
         <div class="pager">
-          <button class="btn ghost" onclick="setCompareIds([]); route('#/compare')">清空清單</button>
+          <button class="btn ghost" onclick="clearCompareAndReload()">清空清單</button>
           <button class="btn primary" onclick="route('#/buy')">回到買屋列表</button>
         </div>
       `;
@@ -1311,9 +1311,17 @@
       const name = encodeURIComponent(item.title);
       window.location.href = `mailto:agent@example.com?subject=我要諮詢%20${name}&body=您好，我想了解 ${name} 的更多資訊。`;
     }
+
+    function clearCompareAndReload(){
+      setCompareIds([]);        // 清空比價清單（localStorage）
+      updateCompareBadges();    // 更新導覽列徽章
+      window.location.reload(); // 直接重新整理頁面
+    }
+
   </script>
 </body>
 </html>
+
 
 
 
