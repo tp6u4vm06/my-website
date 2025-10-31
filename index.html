@@ -806,7 +806,7 @@
           </table>
         </div>
         <div class="pager">
-          <button class="btn ghost" onclick="clearCompareAndReload()">清空清單</button>
+          <button class="btn ghost" onclick="clearCompareAndRerender()">清空清單</button>
           <button class="btn primary" onclick="route('#/buy')">回到買屋列表</button>
         </div>
       `;
@@ -873,19 +873,30 @@
       }
     
       pager.innerHTML = `
-        <span style="margin-right:auto;color:var(--text-muted);">
-          共 ${total} 筆，第 ${PAGE_STATE.page} / ${pages} 頁
-        </span>
-        <button class="btn ghost" id="btn-prev-buy" ${PAGE_STATE.page<=1?'disabled':''}>上一頁</button>
-        <button class="btn primary" id="btn-next-buy" ${PAGE_STATE.page>=pages?'disabled':''}>下一頁</button>
-      `;
+      <span style="margin-right:auto;color:var(--text-muted);">
+        共 ${total} 筆，第 ${PAGE_STATE.page} / ${pages} 頁
+      </span>
+      <button class="btn ghost" id="btn-prev-buy" ${PAGE_STATE.page<=1?'disabled':''}>上一頁</button>
+      <button class="btn primary" id="btn-next-buy" ${PAGE_STATE.page>=pages?'disabled':''}>下一頁</button>
+    `;
     
-      $('#btn-prev-buy')?.addEventListener('click', ()=>{
-        if(PAGE_STATE.page>1){ PAGE_STATE.page--; renderList(items); }
-      });
-      $('#btn-next-buy')?.addEventListener('click', ()=>{
-        if(PAGE_STATE.page<pages){ PAGE_STATE.page++; renderList(items); }
-      });
+    // ← 新增小工具：平滑捲到頁面最上方（避開 sticky 導覽列可自行加 offset）
+    const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    $('#btn-prev-buy')?.addEventListener('click', ()=>{
+      if(PAGE_STATE.page>1){ 
+        PAGE_STATE.page--; 
+        renderList(items);
+        goTop();            // ★ 切頁後捲到上方
+      }
+    });
+    $('#btn-next-buy')?.addEventListener('click', ()=>{
+      if(PAGE_STATE.page<pages){ 
+        PAGE_STATE.page++; 
+        renderList(items);
+        goTop();            // ★ 切頁後捲到上方
+      }
+    });
     
       updateCompareBadges();
     }
@@ -1312,15 +1323,16 @@
       window.location.href = `mailto:agent@example.com?subject=我要諮詢%20${name}&body=您好，我想了解 ${name} 的更多資訊。`;
     }
 
-    function clearCompareSoft(){
-      setCompareIds([]);
-      updateCompareBadges();
-      route('#/compare');  // 切回同頁
-      renderRoute();       // 直接重畫畫面
+    function clearCompareAndRerender(){
+      setCompareIds([]);     // 清空 localStorage
+      updateCompareBadges(); // 更新導覽列上的「比價(...)」
+      route('#/compare');    // 停留在比價頁（或你想跳回買屋可改成 '#/buy'）
+      renderRoute();         // 直接重畫畫面，不用 F5
     }
   </script>
 </body>
 </html>
+
 
 
 
