@@ -449,15 +449,19 @@
       areaPing: ["建坪","建物坪數","權狀坪數","建築面積(坪)"],
       floor:    ["所在樓層","樓層"],
       layout:   ["格局","房廳衛","房/廳/衛"],
-      desc:     ["額外資訊2","描述","特色","備註"]
+      desc:     ["額外資訊2","描述","特色","備註"],
+      priceWan: ["目前價格","價格","總價","售價","總價(萬)","開價(萬)"] // ← 關鍵補上
     };
+
     
     // 從欄位 map 取值的小工具
     function getCell(map, names){
-      for(const n of names){
-        if(map[n] !== undefined){
-          const v = cleanVal(map[n]);
-          if(v) return v;
+      if (!names) return '';                         // 允許 undefined
+      const list = Array.isArray(names) ? names : [names]; // 允許傳字串
+      for (const n of list){
+        if (map[n] !== undefined){
+          const v = cleanVal(map[n]);               // 你先前加的 cleanVal
+          if (v) return v;
         }
       }
       return '';
@@ -1291,5 +1295,6 @@
   </script>
 </body>
 </html>
+
 
 
