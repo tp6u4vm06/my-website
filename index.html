@@ -820,6 +820,7 @@
     function getFilters(){
       return {
         city: ($('#search-city')?.value || '').trim().toLowerCase(),
+        road: ($('#search-road')?.value || '').trim().toLowerCase(),   // ★ 新增
         minPrice: Number($('#min-price')?.value) || 0,
         maxPrice: Number($('#max-price')?.value) || Infinity,
         type: $('#type')?.value || '',
@@ -832,10 +833,14 @@
       const f = getFilters();
       let results = LISTINGS_DATA.filter(d=>{
         const cityDist = (d.city + ' ' + (d._district || '')).toLowerCase();
-        const matchCity = !f.city || cityDist.includes(f.city);
-        const matchType = !f.type || d.type === f.type;
+        const addr = (d._addr || '').toLowerCase();  // ★ 使用完整地址來找路段
+      
+        const matchCity  = !f.city || cityDist.includes(f.city);
+        const matchRoad  = !f.road || addr.includes(f.road);   // ★ 路段條件
+        const matchType  = !f.type || d.type === f.type;
         const matchPrice = d.priceWan >= f.minPrice && d.priceWan <= f.maxPrice;
-        return matchCity && matchType && matchPrice;
+      
+        return matchCity && matchRoad && matchType && matchPrice;
       });
       if(f.sort === 'price_asc') results.sort((a,b)=>a.priceWan - b.priceWan);
       else if(f.sort === 'price_desc') results.sort((a,b)=>b.priceWan - a.priceWan);
@@ -1077,6 +1082,10 @@
       <section class="controls" role="region" aria-label="實價篩選">
         <div class="field"><label>城市</label><input id="p-city" type="text" placeholder="例如：臺北市"></div>
         <div class="field"><label>行政區</label><input id="p-dist" type="text" placeholder="例如：大安區"></div>
+    
+        <!-- ★ 新增：路段 -->
+        <div class="field"><label>路段</label><input id="p-road" type="text" placeholder="例如：永貞路"></div>
+    
         <div class="field"><label>型態</label>
           <select id="p-type">
             <option value="">全部</option>
@@ -1129,6 +1138,7 @@
       return priceState.filters = {
         city: ($('#p-city')?.value || '').trim(),
         dist: ($('#p-dist')?.value || '').trim(),
+        road: ($('#p-road')?.value || '').trim(),     // ★ 新增
         type: $('#p-type')?.value || '',
         from: $('#p-from')?.value || '',
         to:   $('#p-to')?.value || '',
@@ -1142,14 +1152,15 @@
     function applyPrice(){
       const f = getPriceFilters();
       let list = PRICE_DATA.filter(r=>{
-        const okCity = !f.city || r.city.includes(f.city);
-        const okDist = !f.dist || r.district.includes(f.dist);
-        const okType = !f.type || r.type===f.type;
-        const okFrom = !f.from || r.date >= f.from;
-        const okTo   = !f.to   || r.date <= f.to;
+        const okCity  = !f.city || r.city.includes(f.city);
+        const okDist  = !f.dist || r.district.includes(f.dist);
+        const okRoad  = !f.road || r.addr.includes(f.road);   // ★ 新增：用路段/門牌欄位
+        const okType  = !f.type || r.type===f.type;
+        const okFrom  = !f.from || r.date >= f.from;
+        const okTo    = !f.to   || r.date <= f.to;
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
         const okUnit  = r.unitWanPerPing >= f.minUnit && r.unitWanPerPing <= f.maxUnit;
-        return okCity && okDist && okType && okFrom && okTo && okTotal && okUnit;
+        return okCity && okDist && okRoad && okType && okFrom && okTo && okTotal && okUnit;
       });
       list.sort((a,b)=>{
         const k = priceState.sortKey;
@@ -1205,7 +1216,7 @@
     function bindPriceControls(){
       $('#p-search')?.addEventListener('click', ()=>{ priceState.page=1; applyPrice(); });
       $('#p-reset')?.addEventListener('click', ()=>{
-        ['p-city','p-dist','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit'].forEach(id=>{
+        ['p-city','p-dist','p-road','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit'].forEach(id=>{
           const el=$('#'+id); if(!el) return; el.value='';
         });
         priceState.page=1; priceState.sortKey='date'; priceState.sortDir='desc'; applyPrice();
@@ -1243,6 +1254,7 @@
           if (q) {
             const p = new URLSearchParams(q);
             if($('#search-city')) $('#search-city').value = p.get('city') || '';
+            if($('#search-road')) $('#search-road').value = p.get('road') || '';  // ★ 新增
             if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
             if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
             if($('#type'))        $('#type').value        = p.get('type') || '';
@@ -1265,6 +1277,7 @@
           $('#btn-search')?.addEventListener('click', ()=>{
             const params = new URLSearchParams({
               city: $('#search-city').value || '',
+              road: $('#search-road').value || '',      // 路段
               min:  $('#min-price').value || '',
               max:  $('#max-price').value || '',
               type: $('#type').value || '',
@@ -1273,10 +1286,13 @@
             route('#/buy?' + params.toString());
           });
           $('#btn-reset')?.addEventListener('click', ()=>{
-            $('#search-city').value=''; $('#min-price').value='';
-            $('#max-price').value=''; $('#type').value='';
+            $('#search-city').value='';
+            $('#search-road').value='';   // 路段
+            $('#min-price').value='';
+            $('#max-price').value='';
+            $('#type').value='';
             $('#sort').value='relevance';
-            updateCompareBadges();
+            renderList(LISTINGS_DATA);
           });
           updateCompareBadges();
         });
@@ -1336,6 +1352,7 @@
   </script>
 </body>
 </html>
+
 
 
 
