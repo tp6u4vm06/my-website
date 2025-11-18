@@ -1432,7 +1432,7 @@
       else if (h.startsWith('#/price')) {
         app.innerHTML = PagePrice();
         bindPriceControls();
-        autoLoadFromPresetSilent().then(()=>{ ); });
+        autoLoadFromPresetSilent().then(()=>{ applyPrice(); });
       }
       else {
         app.innerHTML = PageHome();
@@ -1550,6 +1550,7 @@
   </script>
 </body>
 </html>
+
 
 
 
