@@ -919,7 +919,9 @@
       
         const matchCity = !f.city || cityDist.includes(f.city);
         const matchRoad = !f.road || addrFull.includes(f.road);
-        const matchType = !f.types.length || f.types.includes(d.type);   // ★ 改為多選
+        const matchType =
+          !f.types.length ||
+          f.types.some(t => (d.type || '').includes(t));
         const matchPrice = d.priceWan >= f.minPrice && d.priceWan <= f.maxPrice;
       
         return matchCity && matchRoad && matchType && matchPrice;
@@ -1544,6 +1546,7 @@
   </script>
 </body>
 </html>
+
 
 
 
