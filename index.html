@@ -356,62 +356,13 @@
         gap: 12px;
       }
     }
-    /* === 多選下拉 === */
-    .multi-select {
-      position: relative;
-      background: #151515;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
-      min-width: 160px;
-    }
-    
-    .multi-select-header {
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      color: var(--text-main);
-    }
-    
-    .multi-select-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #1f1f1f;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px;
-      display: none;
-      max-height: 240px;
-      overflow-y: auto;
-      box-shadow: 0 6px 14px rgba(0,0,0,.35);
-      z-index: 50;
-    }
-    
-    .multi-select.open .multi-select-list {
-      display: block;
-    }
-    
-    .multi-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 0;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-    
-    .multi-item input {
-      cursor: pointer;
-    }
+    /* === 多選下拉：黑底（未展開）→ 白底（展開） === */
 
-    /* === 多選下拉：白底黑字版本 === */
+    /* 未展開：黑底銀字 */
     .multi-select {
       position: relative;
-      background: #ffffff;                 /* ★ 白底 */
-      border: 1px solid #cccccc;           /* ★ 淺灰邊框 */
+      background: #1f1f1f;                 /* ★ 黑底 */
+      border: 1px solid #3a3a3a;
       border-radius: 8px;
       cursor: pointer;
       user-select: none;
@@ -419,26 +370,23 @@
       transition: all .2s ease;
     }
     
-    .multi-select:hover {
-      border-color: #000;                  /* ★ hover 更明顯 */
-    }
-    
     .multi-select-header {
       padding: 10px 12px;
       display: flex;
       justify-content: space-between;
-      color: #000000;                      /* ★ 黑字 */
+      color: #f0f0f0;                       /* ★ 銀字 */
       font-weight: 700;
     }
     
+    /* 展開：清單本體白底黑字 */
     .multi-select-list {
       position: absolute;
       top: 100%;
       left: 0;
       right: 0;
     
-      background: #ffffff;                 /* ★ 下拉清單白底 */
-      border: 1px solid #d0d0d0;           /* ★ 邊框淺灰 */
+      background: #ffffff;                  /* ★ 展開變白底 */
+      border: 1px solid #d0d0d0;
       border-radius: 8px;
       padding: 10px;
       display: none;
@@ -446,7 +394,7 @@
       max-height: 260px;
       overflow-y: auto;
     
-      box-shadow: 0 10px 18px rgba(0,0,0,0.2); /* ★ 白底陰影更明顯 */
+      box-shadow: 0 10px 18px rgba(0,0,0,0.25);
       z-index: 100;
     }
     
@@ -454,6 +402,7 @@
       display: block;
     }
     
+    /* 展開後的選項：黑字、白底 */
     .multi-item {
       display: flex;
       align-items: center;
@@ -462,18 +411,24 @@
       margin-bottom: 2px;
       border-radius: 6px;
       transition: background .15s;
-      color: #000000;                      /* ★ 黑字 */
+      color: #000000;                       /* ★ 黑字 */
       cursor: pointer;
     }
     
     .multi-item:hover {
-      background: rgba(0,0,0,0.07);        /* ★ hover 淺灰背景（白底清楚） */
+      background: rgba(0,0,0,0.08);         /* ★ 淺灰 hover */
     }
     
+    /* checkbox 黑色 */
     .multi-item input[type="checkbox"] {
-      accent-color: #000000;               /* ★ checkbox 黑色（最清楚） */
+      accent-color: #000000;
       width: 15px;
       height: 15px;
+    }
+    
+    /* 展開時讓外框變白底風格（僅外框，不影響 header） */
+    .multi-select.open {
+      border-color: #cccccc;
     }
   </style>
 </head>
@@ -1589,6 +1544,7 @@
   </script>
 </body>
 </html>
+
 
 
 
