@@ -1307,7 +1307,9 @@
         const okCity  = !f.city || r.city.includes(f.city);
         const okDist  = !f.dist || r.district.includes(f.dist);
         const okRoad  = !f.road || r.addr.includes(f.road); // 新增：路段比對（門牌／路名）
-        const okType = !f.types.length || f.types.includes(r.type);
+        const okType =
+          !f.types.length ||
+          f.types.some(t => (r.type || '').includes(t));
         const okFrom  = !f.from || r.date >= f.from;
         const okTo    = !f.to   || r.date <= f.to;
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
@@ -1548,6 +1550,7 @@
   </script>
 </body>
 </html>
+
 
 
 
