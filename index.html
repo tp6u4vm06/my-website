@@ -1073,38 +1073,61 @@
     function rowToRecord(header, row) {
       const map = {};
       header.forEach((h, idx) => map[String(h).trim()] = (row[idx] ?? '').toString().trim());
-      const 鄉鎮市區 = map['鄉鎮市區'] || '';
-      const 交易標的 = map['交易標的'] || '';
+    
+      // 地址
       const 地址 = map['土地位置建物門牌'] || '';
-      const 交易年月日 = map['交易年月日'] || '';
-      const 建物型態 = map['建物型態'] || '';
-      const 總價元 = num(map['總價元']);
-      const 單價元平方公尺 = num(map['單價元平方公尺']);
-      const 建物移轉總面積平方公尺 = num(map['建物移轉總面積平方公尺']);
-      const 建築完成年月 = map['建築完成年月'] || '';
       const addrParts = splitCityDist(地址);
+      
+      // 城市 / 行政區
       const city = addrParts.city;
-      const district = 鄉鎮市區 || addrParts.district;
-      const totalWan = 總價元 / 10000;
-      const unitWanPerPing = (單價元平方公尺 * 3.305785) / 10000;
-      const areaPing = 建物移轉總面積平方公尺 ? (建物移轉總面積平方公尺 / 3.305785) : 0;
-      const buildDate = buildYmToDate(建築完成年月);
+      const district = map['鄉鎮市區'] || addrParts.district;
+    
+      // 建物型態（需要清潔文字，例如：華廈(10層含以下有電梯) → 華廈）
+      let rawType = map['建物型態'] || map['交易標的'] || '';
+      rawType = rawType.replace(/\(.+\)/g, ""); // 去括號內容
+      rawType = rawType.replace(/[（(].+[）)]/g, ""); // 全形半形一起處理
+      rawType = rawType.trim();
+    
+      // 面積（坪）
+      const bAreaM2 = num(map['建物移轉總面積平方公尺']);  // m2
+      const areaPing = bAreaM2 ? (bAreaM2 / 3.305785) : 0;
+    
+      // 單價（萬/坪）
+      const unitPerM2 = num(map['單價元平方公尺']);
+      let unitWanPerPing = 0;
+      if (unitPerM2) {
+        unitWanPerPing = (unitPerM2 * 3.305785) / 10000;
+      }
+    
+      // 總價（萬）
+      const totalWan = num(map['總價元']) / 10000;
+    
+      // 建築完成年月 → 建築年份 / 屋齡
+      const buildDate = buildYmToDate(map['建築完成年月']);
       const ageYears = calcAgeYears(buildDate);
+    
+      // 交易年月日 → 轉年-月
+      const date = toYearMonth(map['交易年月日']);
+    
+      // 若缺交易日 or 缺地址 → 略過
+      if (!date || (!city && !district && !addrParts.road)) return null;
+    
       const rec = {
         id: undefined,
-        date: toYearMonth(交易年月日),
-        city, district,
+        date,
+        city,
+        district,
         addr: addrParts.road || 地址,
-        type: 建物型態 || 交易標的 || '',
+        type: rawType,     // ★ 已經乾淨化
         areaPing: Number(areaPing.toFixed(2)),
         unitWanPerPing: Number(unitWanPerPing.toFixed(2)),
         totalWan: Math.round(totalWan),
-        age: ageYears
+        age: ageYears,
       };
-      if (!rec.date) return null;
-      if (!rec.city && !rec.district && !rec.addr) return null;
+    
       return rec;
     }
+
     function csvTextToRecords(text) {
       const lines = parseCsv(text).filter(r => r.length && r.some(x => x && x.trim() !== ''));
       if (!lines.length) return [];
@@ -1544,6 +1567,7 @@
   </script>
 </body>
 </html>
+
 
 
 
