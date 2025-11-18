@@ -1129,9 +1129,9 @@
       return unique;
     }
     const PRESET_FILES = [
-      "第一季台中.csv","第一季台北.csv", "第一季台南.csv","第一季桃園.csv", "第一季高雄.csv","第一季新北.csv",
+      "第一季台中.csv","第一季台北.csv","第一季台南.csv","第一季桃園.csv","第一季高雄.csv","第一季新北.csv",
       "第二季台中.csv","第二季台北.csv","第二季台南.csv","第二季桃園.csv","第二季高雄.csv","第二季新北.csv",
-      "第三季台中.csv", "第三季台北.csv","第三季台南.csv","第三季桃園.csv","第三季高雄.csv","第三季新北.csv"
+      "第三季台中.csv","第三季台北.csv","第三季台南.csv","第三季桃園.csv","第三季高雄.csv","第三季新北.csv",
     ];
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
@@ -1143,6 +1143,7 @@
       for (const name of PRESET_FILES){
         try{
           const res = await fetch(base + name);
+          console.log('fetch', base + name, res.status);   // ★ 新增這行，看到每個檔案載入狀態
           if (!res.ok) continue;
           texts.push(await res.text());
         }catch(e){}
@@ -1161,6 +1162,8 @@
       PRICE_DATA.length = 0;
       PRICE_DATA.push(...merged);
       PRICE_READY = true;
+    
+      console.log('[PRICE] 已載入', PRICE_DATA.length, '筆');  // ★ 新增這行
     }
 
     function headerCell(key, label){
@@ -1280,8 +1283,8 @@
       return priceState.filters = {
         city: ($('#p-city')?.value || '').trim(),
         dist: ($('#p-dist')?.value || '').trim(),
-        road: ($('#p-road')?.value || '').trim(), // ← 如果你有新增路段輸入欄
-        types: [...$$('.chk-type:checked')].map(c => c.value),  // ★ 多選型態（一定要改這個）
+        road: ($('#p-road')?.value || '').trim(),
+        types: [...$$('.chk-type:checked')].map(c => c.value),
         from: $('#p-from')?.value || '',
         to:   $('#p-to')?.value || '',
         minTotal: Number($('#p-min-total')?.value) || 0,
@@ -1542,6 +1545,7 @@
   </script>
 </body>
 </html>
+
 
 
 
