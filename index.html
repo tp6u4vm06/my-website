@@ -1136,21 +1136,26 @@
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
       if (PRICE_READY) return;
+    
+      const base = "./data/";
       const texts = [];
+    
       for (const name of PRESET_FILES){
         try{
-          const res = await fetch("./data/" + name);
+          const res = await fetch(base + name);
           if (!res.ok) continue;
           texts.push(await res.text());
         }catch(e){}
       }
+    
       if (!texts.length){
-        console.warn("預設清單皆無法載入");
+        console.warn("無法載入任何實價登錄 CSV");
         return;
       }
     
       const all = [];
-      for(const t of texts) all.push(...csvTextToRecords(t));
+      for (const t of texts) all.push(...csvTextToRecords(t));
+    
       const merged = dedupRecords(all);
     
       PRICE_DATA.length = 0;
@@ -1417,7 +1422,9 @@
       else if (h.startsWith('#/price')) {
         app.innerHTML = PagePrice();
         bindPriceControls();
-        autoLoadFromPresetSilent().then(()=>{ applyPrice(); });
+        autoLoadFromPresetSilent().then(() => {
+          applyPrice();
+        });
       }
       else {
         app.innerHTML = PageHome();
@@ -1535,5 +1542,6 @@
   </script>
 </body>
 </html>
+
 
 
