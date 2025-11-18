@@ -407,27 +407,27 @@
       cursor: pointer;
     }
 
-    /* === 多選下拉（高亮版） === */
+    /* === 多選下拉：白底黑字版本 === */
     .multi-select {
       position: relative;
-      background: #222;                     /* 更亮的深灰 */
-      border: 1px solid #6f6f6f;            /* 銀灰框線，更顯眼 */
+      background: #ffffff;                 /* ★ 白底 */
+      border: 1px solid #cccccc;           /* ★ 淺灰邊框 */
       border-radius: 8px;
       cursor: pointer;
       user-select: none;
       min-width: 160px;
-      transition: border-color .2s;
+      transition: all .2s ease;
     }
     
     .multi-select:hover {
-      border-color: var(--blue);            /* hover 時變亮銀色 */
+      border-color: #000;                  /* ★ hover 更明顯 */
     }
     
     .multi-select-header {
       padding: 10px 12px;
       display: flex;
       justify-content: space-between;
-      color: #fdfdfd;                       /* 更亮的文字 */
+      color: #000000;                      /* ★ 黑字 */
       font-weight: 700;
     }
     
@@ -437,17 +437,17 @@
       left: 0;
       right: 0;
     
-      background: #2c2c2c;                  /* 下拉清單變亮一階 */
-      border: 1px solid #777;               /* 銀灰 */
+      background: #ffffff;                 /* ★ 下拉清單白底 */
+      border: 1px solid #d0d0d0;           /* ★ 邊框淺灰 */
       border-radius: 8px;
       padding: 10px;
       display: none;
     
       max-height: 260px;
       overflow-y: auto;
-      box-shadow: 0 10px 18px rgba(0,0,0,.55);
     
-      z-index: 50;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.2); /* ★ 白底陰影更明顯 */
+      z-index: 100;
     }
     
     .multi-select.open .multi-select-list {
@@ -462,16 +462,16 @@
       margin-bottom: 2px;
       border-radius: 6px;
       transition: background .15s;
-      color: #eaeaea;                       /* ★ 更亮 */
+      color: #000000;                      /* ★ 黑字 */
       cursor: pointer;
     }
     
     .multi-item:hover {
-      background: rgba(192,192,192,0.25);   /* ★ hover 排行時變銀亮 */
+      background: rgba(0,0,0,0.07);        /* ★ hover 淺灰背景（白底清楚） */
     }
     
     .multi-item input[type="checkbox"] {
-      accent-color: var(--blue);            /* ★ 勾選框變銀亮 */
+      accent-color: #000000;               /* ★ checkbox 黑色（最清楚） */
       width: 15px;
       height: 15px;
     }
@@ -1589,6 +1589,7 @@
   </script>
 </body>
 </html>
+
 
 
 
