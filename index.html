@@ -1152,22 +1152,23 @@
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
       if (PRICE_READY) return;
-      const base = "./data/";
       const texts = [];
       for (const name of PRESET_FILES){
         try{
-          const res = await fetch(base + name);
+          const res = await fetch("./data/" + name);
           if (!res.ok) continue;
           texts.push(await res.text());
         }catch(e){}
       }
       if (!texts.length){
-        console.warn("預設清單皆無法載入，請確認 ./data/ 與檔名。");
+        console.warn("預設清單皆無法載入");
         return;
       }
+    
       const all = [];
-      for (const t of texts) all.push(...csvTextToRecords(t));
+      for(const t of texts) all.push(...csvTextToRecords(t));
       const merged = dedupRecords(all);
+    
       PRICE_DATA.length = 0;
       PRICE_DATA.push(...merged);
       PRICE_READY = true;
@@ -1550,6 +1551,7 @@
   </script>
 </body>
 </html>
+
 
 
 
