@@ -1141,12 +1141,11 @@
       const texts = [];
     
       for (const name of PRESET_FILES){
-        try{
+        try {
           const res = await fetch(base + name);
-          console.log('fetch', base + name, res.status);   // ★ 新增這行，看到每個檔案載入狀態
           if (!res.ok) continue;
           texts.push(await res.text());
-        }catch(e){}
+        } catch(e){}
       }
     
       if (!texts.length){
@@ -1163,7 +1162,7 @@
       PRICE_DATA.push(...merged);
       PRICE_READY = true;
     
-      console.log('[PRICE] 已載入', PRICE_DATA.length, '筆');  // ★ 新增這行
+      console.log("[PRICE] 已載入", PRICE_DATA.length, "筆");
     }
 
     function headerCell(key, label){
@@ -1545,6 +1544,7 @@
   </script>
 </body>
 </html>
+
 
 
 
