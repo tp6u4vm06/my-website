@@ -356,6 +356,56 @@
         gap: 12px;
       }
     }
+    /* === 多選下拉 === */
+    .multi-select {
+      position: relative;
+      background: #151515;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      min-width: 160px;
+    }
+    
+    .multi-select-header {
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
+    
+    .multi-select-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1f1f1f;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      display: none;
+      max-height: 240px;
+      overflow-y: auto;
+      box-shadow: 0 6px 14px rgba(0,0,0,.35);
+      z-index: 50;
+    }
+    
+    .multi-select.open .multi-select-list {
+      display: block;
+    }
+    
+    .multi-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 0;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    
+    .multi-item input {
+      cursor: pointer;
+    }
   </style>
 </head>
   
@@ -657,17 +707,25 @@
         </article>`;
     }
 
-    function Controls({ showSort=false }){
+    function Controls({ showSort=false }) {
+      const typeOptions = [
+        "土地","公寓","住宅大樓","別墅","店面","套房","透天",
+        "華夏","農舍","大樓","廠房","樓中樓","辦公商業大樓","豪宅"
+      ];
+    
       return `
       <section class="controls" role="region" aria-label="篩選工具">
+    
         <div class="field">
-          <label for="search-city">縣市 / 行政區</label>
-          <input id="search-city" type="text" placeholder="輸入城市或行政區（EX：臺北市or大安區）">
+          <label for="search-city">地區搜尋</label>
+          <input id="search-city" type="text" placeholder="輸入城市或行政區（例如：臺北市）">
         </div>
+    
         <div class="field">
           <label for="search-road">路段</label>
-          <input id="search-road" type="text" placeholder="輸入路名（EX：忠孝東路）">
+          <input id="search-road" type="text" placeholder="輸入路名關鍵字（例如：忠孝東路）">
         </div>
+    
         <div class="field">
           <label>價格（萬）</label>
           <div class="range-inline">
@@ -675,19 +733,26 @@
             <input id="max-price" type="number" placeholder="最高 (萬)" min="0" style="width:120px">
           </div>
         </div>
+    
         <div class="field">
           <label>房屋型態（可多選）</label>
-          <div id="type-group" style="display:flex;flex-wrap:wrap;gap:10px;">
-            ${["公寓","住宅大樓","別墅","店面","套房","透天","華夏","農舍","大樓","廠房","樓中樓","辦公商業大樓","豪宅","土地"]
-              .map(t => `
-                <label style="display:flex;align-items:center;gap:4px;">
+    
+          <div class="multi-select" id="type-dropdown">
+            <div class="multi-select-header">
+              <span id="type-placeholder">全部</span>
+              <span>▼</span>
+            </div>
+            <div class="multi-select-list">
+              ${typeOptions.map(t => `
+                <label class="multi-item">
                   <input type="checkbox" class="chk-type" value="${t}">
                   ${t}
                 </label>
               `).join('')}
+            </div>
           </div>
         </div>
-        
+    
         ${ showSort ? `
         <div class="field">
           <label for="sort">排序</label>
@@ -696,11 +761,14 @@
             <option value="price_asc">價格：由低到高</option>
             <option value="price_desc">價格：由高到低</option>
           </select>
-        </div>` : ''}
+        </div>
+        `:''}
+    
         <div class="btns">
           <button id="btn-search" class="btn primary">搜尋</button>
           <button id="btn-reset" class="btn ghost">重設</button>
         </div>
+    
       </section>`;
     }
 
@@ -1084,44 +1152,60 @@
       return `<th class="sortable" data-key="${key}">${label} <span class="arrow">${arrow}</span></th>`;
     }
     function ControlsPrice(){
+      const typeOptions = [
+        "公寓(5樓含以下無電梯)",
+        "華廈(10層含以下有電梯)",
+        "住宅大樓(11層含以上有電梯)",
+        "透天厝"
+      ];
+    
       return `
       <section class="controls" role="region" aria-label="實價篩選">
+    
         <div class="field">
           <label>城市</label>
           <input id="p-city" type="text" placeholder="例如：臺北市">
         </div>
+    
         <div class="field">
           <label>行政區</label>
           <input id="p-dist" type="text" placeholder="例如：大安區">
         </div>
+    
         <div class="field">
           <label>路段</label>
           <input id="p-road" type="text" placeholder="例如：忠孝東路">
         </div>
+    
         <div class="field">
           <label>型態（可多選）</label>
-          <div id="p-type-group" style="display:flex;flex-wrap:wrap;gap:10px;">
-            ${[
-              "公寓(5樓含以下無電梯)",
-              "華廈(10層含以下有電梯)",
-              "住宅大樓(11層含以上有電梯)",
-              "透天厝"
-            ].map(t => `
-              <label style="display:flex;align-items:center;gap:4px;">
-                <input type="checkbox" class="chk-ptype" value="${t}">
-                ${t}
-              </label>
-            `).join('')}
+    
+          <div class="multi-select" id="ptype-dropdown">
+            <div class="multi-select-header">
+              <span id="ptype-placeholder">全部</span>
+              <span>▼</span>
+            </div>
+            <div class="multi-select-list">
+              ${typeOptions.map(t => `
+                <label class="multi-item">
+                  <input type="checkbox" class="chk-type" value="${t}">
+                  ${t}
+                </label>
+              `).join('')}
+            </div>
           </div>
         </div>
+    
         <div class="field">
           <label>成交月(起)</label>
           <input id="p-from" type="month">
         </div>
+    
         <div class="field">
           <label>成交月(迄)</label>
           <input id="p-to" type="month">
         </div>
+    
         <div class="field">
           <label>總價(萬)</label>
           <div class="range-inline">
@@ -1129,6 +1213,7 @@
             <input id="p-max-total" type="number" placeholder="最高" min="0" style="width:120px">
           </div>
         </div>
+    
         <div class="field">
           <label>單價(萬/坪)</label>
           <div class="range-inline">
@@ -1136,12 +1221,15 @@
             <input id="p-max-unit" type="number" placeholder="最高" min="0" style="width:120px">
           </div>
         </div>
+    
         <div class="btns">
           <button id="p-search" class="btn primary">搜尋</button>
           <button id="p-reset" class="btn ghost">重設</button>
         </div>
+    
       </section>`;
     }
+
     function PagePrice(){
       return `
         <h2 class="section-title">實價登錄</h2>
@@ -1394,9 +1482,45 @@
       route('#/compare');    // 停留在比價頁（或你想跳回買屋可改成 '#/buy'）
       renderRoute();         // 直接重畫畫面，不用 F5
     }
+    // === 下拉式型態多選控制 ===
+    document.addEventListener('click', (e)=>{
+      const dropdowns = $$('.multi-select');
+    
+      dropdowns.forEach(dd=>{
+        const header = dd.querySelector('.multi-select-header');
+    
+        // 點到 header → 展開/收合
+        if(header.contains(e.target)){
+          dd.classList.toggle('open');
+          return;
+        }
+    
+        // 點 checkbox → 更新標題
+        if(dd.contains(e.target) && e.target.classList.contains('chk-type')){
+          updateTypeLabel();
+          return;
+        }
+    
+        // 點到外面 → 關閉
+        if(!dd.contains(e.target)){
+          dd.classList.remove('open');
+        }
+      });
+    });
+    
+    function updateTypeLabel(){
+      const checked = $$('.chk-type:checked').map(c => c.value);
+      $$('#type-placeholder, #ptype-placeholder').forEach(label=>{
+        if(!label) return;
+        if(checked.length === 0) label.textContent = "全部";
+        else if(checked.length === 1) label.textContent = checked[0];
+        else label.textContent = checked.length + " 個已選";
+      });
+    }
   </script>
 </body>
 </html>
+
 
 
 
