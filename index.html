@@ -1290,8 +1290,8 @@
       return priceState.filters = {
         city: ($('#p-city')?.value || '').trim(),
         dist: ($('#p-dist')?.value || '').trim(),
-        road: ($('#p-road')?.value || '').trim(),
-        types: $$('.chk-ptype:checked').map(c => c.value),  // ★ 多選
+        road: ($('#p-road')?.value || '').trim(), // ← 如果你有新增路段輸入欄
+        types: [...$$('.chk-type:checked')].map(c => c.value),  // ★ 多選型態（一定要改這個）
         from: $('#p-from')?.value || '',
         to:   $('#p-to')?.value || '',
         minTotal: Number($('#p-min-total')?.value) || 0,
@@ -1432,7 +1432,7 @@
       else if (h.startsWith('#/price')) {
         app.innerHTML = PagePrice();
         bindPriceControls();
-        autoLoadFromPresetSilent().then(()=>{ applyPrice(); });
+        autoLoadFromPresetSilent().then(()=>{ ); });
       }
       else {
         app.innerHTML = PageHome();
@@ -1550,6 +1550,7 @@
   </script>
 </body>
 </html>
+
 
 
 
