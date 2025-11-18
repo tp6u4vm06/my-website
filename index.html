@@ -662,11 +662,11 @@
       <section class="controls" role="region" aria-label="篩選工具">
         <div class="field">
           <label for="search-city">縣市 / 行政區</label>
-          <input id="search-city" type="text" placeholder="輸入城市或行政區（例如：臺北市、大安區）">
+          <input id="search-city" type="text" placeholder="輸入城市或行政區（EX：臺北市or大安區）">
         </div>
         <div class="field">
           <label for="search-road">路段</label>
-          <input id="search-road" type="text" placeholder="輸入路名或關鍵字（例如：忠孝東路）">
+          <input id="search-road" type="text" placeholder="輸入路名（EX：忠孝東路）">
         </div>
         <div class="field">
           <label>價格（萬）</label>
@@ -1043,8 +1043,24 @@
       return unique;
     }
     const PRESET_FILES = [
-      "114年第二季_台北.csv","114年第二季_新北.csv","114年第二季_桃園.csv","114年第二季_台中.csv","114年第二季_台南.csv","114年第二季_高雄.csv",
-      "114年第三季_台北.csv","114年第三季_新北.csv","114年第三季_桃園.csv","114年第三季_台中.csv","114年第三季_台南.csv","114年第三季_高雄.csv"
+      "第一季台中.csv",
+      "第一季台北.csv",
+      "第一季台南.csv",
+      "第一季桃園.csv",
+      "第一季高雄.csv",
+      "第一季新北.csv",
+      "第二季台中.csv",
+      "第二季台北.csv",
+      "第二季台南.csv",
+      "第二季桃園.csv",
+      "第二季高雄.csv",
+      "第二季新北.csv",
+      "第三季台中.csv",
+      "第三季台北.csv",
+      "第三季台南.csv",
+      "第三季桃園.csv",
+      "第三季高雄.csv",
+      "第三季新北.csv"
     ];
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
@@ -1379,4 +1395,5 @@
   </script>
 </body>
 </html>
+
 
