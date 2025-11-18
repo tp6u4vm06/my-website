@@ -676,25 +676,18 @@
           </div>
         </div>
         <div class="field">
-          <label for="type">房屋型態</label>
-          <select id="type">
-            <option value="">全部</option>
-            <option>土地</option>
-            <option>公寓</option>
-            <option>住宅大樓</option>
-            <option>別墅</option>
-            <option>店面</option>
-            <option>套房</option>
-            <option>透天</option>
-            <option>華夏</option>
-            <option>農舍</option>
-            <option>大樓</option>
-            <option>廠房</option>
-            <option>樓中樓</option>
-            <option>辦公商業大樓</option>
-            <option>豪宅</option>
-          </select>
+          <label>房屋型態（可多選）</label>
+          <div id="type-group" style="display:flex;flex-wrap:wrap;gap:10px;">
+            ${["公寓","住宅大樓","別墅","店面","套房","透天","華夏","農舍","大樓","廠房","樓中樓","辦公商業大樓","豪宅","土地"]
+              .map(t => `
+                <label style="display:flex;align-items:center;gap:4px;">
+                  <input type="checkbox" class="chk-type" value="${t}">
+                  ${t}
+                </label>
+              `).join('')}
+          </div>
         </div>
+        
         ${ showSort ? `
         <div class="field">
           <label for="sort">排序</label>
@@ -820,7 +813,7 @@
         road: ($('#search-road')?.value || '').trim().toLowerCase(),  // 新增路段
         minPrice: Number($('#min-price')?.value) || 0,
         maxPrice: Number($('#max-price')?.value) || Infinity,
-        type: $('#type')?.value || '',
+        types: $$('.chk-type:checked').map(c => c.value),   // 多選
         sort: $('#sort')?.value || 'relevance'
       };
     }
@@ -830,11 +823,11 @@
       const f = getFilters();
       let results = LISTINGS_DATA.filter(d=>{
         const cityDist = (d.city + ' ' + (d._district || '')).toLowerCase();
-        const addrFull = (d._addr || '').toLowerCase();   // 完整地址（含路名）
+        const addrFull = (d._addr || '').toLowerCase();
       
         const matchCity = !f.city || cityDist.includes(f.city);
-        const matchRoad = !f.road || addrFull.includes(f.road); // 新增：路段關鍵字
-        const matchType = !f.type || d.type === f.type;
+        const matchRoad = !f.road || addrFull.includes(f.road);
+        const matchType = !f.types.length || f.types.includes(d.type);   // ★ 改為多選
         const matchPrice = d.priceWan >= f.minPrice && d.priceWan <= f.maxPrice;
       
         return matchCity && matchRoad && matchType && matchPrice;
@@ -1106,14 +1099,20 @@
           <input id="p-road" type="text" placeholder="例如：忠孝東路">
         </div>
         <div class="field">
-          <label>型態</label>
-          <select id="p-type">
-            <option value="">全部</option>
-            <option>公寓(5樓含以下無電梯)</option>
-            <option>華廈(10層含以下有電梯)</option>
-            <option>住宅大樓(11層含以上有電梯)</option>
-            <option>透天厝</option>
-          </select>
+          <label>型態（可多選）</label>
+          <div id="p-type-group" style="display:flex;flex-wrap:wrap;gap:10px;">
+            ${[
+              "公寓(5樓含以下無電梯)",
+              "華廈(10層含以下有電梯)",
+              "住宅大樓(11層含以上有電梯)",
+              "透天厝"
+            ].map(t => `
+              <label style="display:flex;align-items:center;gap:4px;">
+                <input type="checkbox" class="chk-ptype" value="${t}">
+                ${t}
+              </label>
+            `).join('')}
+          </div>
         </div>
         <div class="field">
           <label>成交月(起)</label>
@@ -1175,8 +1174,8 @@
       return priceState.filters = {
         city: ($('#p-city')?.value || '').trim(),
         dist: ($('#p-dist')?.value || '').trim(),
-        road: ($('#p-road')?.value || '').trim(),   // 新增：路段
-        type: $('#p-type')?.value || '',
+        road: ($('#p-road')?.value || '').trim(),
+        types: $$('.chk-ptype:checked').map(c => c.value),  // ★ 多選
         from: $('#p-from')?.value || '',
         to:   $('#p-to')?.value || '',
         minTotal: Number($('#p-min-total')?.value) || 0,
@@ -1192,7 +1191,7 @@
         const okCity  = !f.city || r.city.includes(f.city);
         const okDist  = !f.dist || r.district.includes(f.dist);
         const okRoad  = !f.road || r.addr.includes(f.road); // 新增：路段比對（門牌／路名）
-        const okType  = !f.type || r.type === f.type;
+        const okType = !f.types.length || f.types.includes(r.type);
         const okFrom  = !f.from || r.date >= f.from;
         const okTo    = !f.to   || r.date <= f.to;
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
@@ -1286,11 +1285,14 @@
           $('#btn-search')?.addEventListener('click', applyFilters);
           $('#btn-reset')?.addEventListener('click', ()=>{
             $('#search-city').value='';
-            $('#search-road').value='';          // 新增
+            $('#search-road').value='';
             $('#min-price').value='';
             $('#max-price').value='';
-            $('#type').value='';
             $('#sort').value='relevance';
+          
+            // 清空所有型態多選 checkbox
+            $$('.chk-type').forEach(c => c.checked = false);
+          
             renderList(LISTINGS_DATA);
           });
           const q = h.split('?')[1];
@@ -1395,5 +1397,6 @@
   </script>
 </body>
 </html>
+
 
 
