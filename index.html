@@ -1162,7 +1162,9 @@
     ];
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
-      if (PRICE_READY) return;
+      if (PRICE_READY) return;   // ← 保證只執行一次
+    
+      PRICE_READY = true;        // ← 一開始就鎖住，避免遞迴爆炸
     
       const base = "./data/";
       const texts = [];
@@ -1187,7 +1189,6 @@
     
       PRICE_DATA.length = 0;
       PRICE_DATA.push(...merged);
-      PRICE_READY = true;
     
       console.log("[PRICE] 已載入", PRICE_DATA.length, "筆");
     }
@@ -1571,6 +1572,7 @@
   </script>
 </body>
 </html>
+
 
 
 
