@@ -329,8 +329,9 @@
 
     .btns {
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+      flex-direction: row;  /* 水平排列（可省略，flex 預設為 row） */
+      gap: 10px;            /* 兩個按鈕之間的距離 */
+      align-items: center;
     }
     </style>
 </head>
@@ -1487,6 +1488,7 @@
   </script>
 </body>
 </html>
+
 
 
 
