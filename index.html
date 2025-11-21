@@ -756,7 +756,15 @@
             <input id="max-price" type="number" placeholder="最高 (萬)" min="0" style="width:120px">
           </div>
         </div>
-    
+
+        <div class="field">
+          <label>屋齡(年)</label>
+          <div class="range-inline">
+            <input id="p-min-age" type="number" placeholder="最低" min="0" style="width:120px">
+            <input id="p-max-age" type="number" placeholder="最高" min="0" style="width:120px">
+          </div>
+        </div>
+        
         <div class="field">
           <label>房屋型態（可多選）</label>
     
@@ -1326,6 +1334,8 @@
         maxTotal: Number($('#p-max-total')?.value) || Infinity,
         minUnit:  Number($('#p-min-unit')?.value)  || 0,
         maxUnit:  Number($('#p-max-unit')?.value)  || Infinity,
+        minAge: Number($('#p-min-age')?.value) || 0,
+        maxAge: Number($('#p-max-age')?.value) || Infinity,
       };
     }
 
@@ -1342,7 +1352,8 @@
         const okTo    = !f.to   || r.date <= f.to;
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
         const okUnit  = r.unitWanPerPing >= f.minUnit && r.unitWanPerPing <= f.maxUnit;
-        return okCity && okDist && okRoad && okType && okFrom && okTo && okTotal && okUnit;
+        const okAge   = r.age >= f.minAge && r.age <= f.maxAge;
+        return okCity && okDist && okRoad && okType && okFrom && okTo && okTotal && okUnit && okAge;
       });
       list.sort((a,b)=>{
         const k = priceState.sortKey;
@@ -1399,7 +1410,7 @@
     function bindPriceControls(){
       $('#p-search')?.addEventListener('click', ()=>{ priceState.page=1; applyPrice(); });
       $('#p-reset')?.addEventListener('click', ()=>{
-        ['p-city','p-dist','p-road','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit'].forEach(id=>{
+        ['p-city','p-dist','p-road','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit','p-min-age','p-max-age' ].forEach(id=>{
           const el=$('#'+id); if(!el) return; el.value='';
         });
         priceState.page=1;
@@ -1581,6 +1592,7 @@
   </script>
 </body>
 </html>
+
 
 
 
