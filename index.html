@@ -62,8 +62,16 @@
     }
 
     /* ------- 版面與共用 ------- */
-    .container { max-width:1200px; margin:24px auto; padding:0 12px 80px; }
-    .section-title { margin:8px 0 14px 4px; font-weight:800; color:#f5f5f5; }
+    .container { 
+      max-width:1200px; 
+      margin:24px auto; 
+      padding:0 12px 80px; 
+    }
+    .section-title { 
+      margin:8px 0 14px 4px; 
+      font-weight:800; 
+      color:#f5f5f5; 
+    }
     
     /* ========================== Hero ========================== */
     .hero{
@@ -114,6 +122,15 @@
       border:1px solid #555;
       border-radius:6px;
       color:white;
+    }
+
+    /* 比價頁面分頁按鈕大小（清空清單 / 回到買屋列表） */
+    #app .pager .btn {
+      min-width: 110px;   /* 按鈕寬度 */
+      height: 44px;       /* 高度 */
+      padding: 10px 16px; /* 內距 */
+      font-size: 16px;    /* 字體大小 */
+      border-radius: 10px;/* 圓角 */
     }
     
     /* ========================== Cards ========================== */
@@ -308,6 +325,13 @@
     /* 展開時讓外框變白底風格（僅外框，不影響 header） */
     .multi-select.open {
       border-color: #cccccc;
+    }
+
+    .btns {
+      display: flex;
+      flex-direction: row;  /* 水平排列（可省略，flex 預設為 row） */
+      gap: 10px;            /* 兩個按鈕之間的距離 */
+      align-items: center;
     }
     </style>
 </head>
@@ -1464,6 +1488,7 @@
   </script>
 </body>
 </html>
+
 
 
 
