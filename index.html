@@ -1305,6 +1305,7 @@
                 ${headerCell('areaPing','建坪(坪)')}
                 ${headerCell('unitWanPerPing','單價(萬/坪)')}
                 ${headerCell('totalWan','總價(萬)')}
+                ${headerCell('age','屋齡(年)')}  
               </tr>
             </thead>
             <tbody id="price-tbody"></tbody>
@@ -1371,6 +1372,7 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
+          <td>${r.age}</td>   <!-- ★ 新增 -->
         </tr>
       `).join('');
       const info = $('#price-info');
@@ -1583,6 +1585,7 @@
   </script>
 </body>
 </html>
+
 
 
 
