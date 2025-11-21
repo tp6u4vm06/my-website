@@ -11,508 +11,219 @@
       --border:#3a3a3a;
       --text-main:#f0f0f0;
       --text-muted:#b2b2b2;
-      --blue:#c0c0c0;       /* 按鈕保持銀色 */
-      --price-color:#ff4d4d; /* ★ 專用亮紅色 */
-    }
-
-    * { 
-      box-sizing: border-box; 
-    }
-    
-    body { 
-      margin:0; 
-      background: linear-gradient(180deg, var(--blue-light) 0%, var(--bg) 80%); 
-      color: var(--text-main); 
-      -webkit-font-smoothing: antialiased; 
-      -moz-osx-font-smoothing: grayscale; 
-      min-height: 100vh; 
+      --blue:#c0c0c0;
+      --blue-dark:#9a9a9a;
+      --blue-light:#202020;
+      --price-color:#ff4d4d;
+      --shadow:0 6px 18px rgba(0,0,0,.35);
     }
     
-    .nav { 
-      display:flex; align-items:center; 
-      justify-content:space-between; 
-      padding:14px 20px; background: rgba(18,18,18,.85); 
-      backdrop-filter: blur(8px); 
-      box-shadow: var(--shadow); 
-      position: sticky; top:0; 
-      z-index:10; 
+    /* ========================== General ========================== */
+    *{ box-sizing:border-box; }
+    
+    body{
+      margin:0;
+      background:linear-gradient(180deg, var(--blue-light) 0%, var(--bg) 80%);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
     }
     
-    .brand { 
-      display:flex; 
-      align-items:center; 
-      gap:12px; 
+    /* ========================== Navbar ========================== */
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 20px;
+      background:rgba(18,18,18,.85);
+      backdrop-filter:blur(8px);
+      position:sticky;top:0;z-index:10;
+      box-shadow:var(--shadow);
     }
     
-    .logo { 
-      width:42px; 
-      height:42px; 
-      border-radius:8px; 
-      background:var(--blue); 
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      color:#121212; 
-      font-weight:700; 
-      font-size:18px; 
-      box-shadow:0 4px 10px rgba(0,0,0,.35); 
+    .nav-links a{
+      color:#f0f0f0;
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:8px;
+      font-weight:700;
+    }
+    .nav-links a.active,
+    .nav-links a:hover{
+      background:#c0c0c0;
+      color:#121212;
     }
     
-    .logo img { 
-      height:48px; 
-      width:auto; 
-      object-fit:contain; 
-      display:block; 
-      border-radius:12px; 
+    /* ========================== Hero ========================== */
+    .hero{
+      max-width:1200px;
+      margin:24px auto;
+      border-radius:16px;
+      position:relative;
+      background:url("./images/id8.jpg") center/cover no-repeat;
+      box-shadow:var(--shadow);
+    }
+    .hero::before{
+      content:"";position:absolute;inset:0;border-radius:16px;
+      background:rgba(0,0,0,.75);
+    }
+    .hero-inner{
+      position:relative;z-index:1;padding:64px 32px;
+      display:flex;flex-direction:column;gap:14px;
     }
     
-    .nav-links { 
-      display:flex; 
-      gap:10px; 
-      align-items:center; 
+    /* ========================== Controls（篩選） ========================== */
+    .controls{
+      max-width:1200px;
+      margin:24px auto;
+      padding:20px;
+      background:#1f1f1f;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:16px;
+      grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
     }
     
-    .nav-links a { 
-      color: #f0f0f0; 
-      text-decoration:none; 
-      font-weight:700; 
-      font-size:14px; 
-      padding:8px 10px; 
-      border-radius:8px; 
-    }
-    
-    .nav-links a.active, .nav-links a:hover { 
-      background:#c0c0c0; color:#121212; 
-    }
-    
-    .container { 
-      max-width:1200px; 
-      margin:24px auto; 
-      padding:0 12px 80px; 
-    }
-    
-    .section-title { 
-      margin:8px 0 14px 4px; 
-      font-weight:800; 
-      color:#f5f5f5; 
-    }
-    
-    .hero { 
-      position:relative; 
-      max-width:1200px; 
-      margin:24px auto; 
-      border-radius:16px; 
-      color:#fff; box-shadow:var(--shadow); 
-      background: url("./images/id8.jpg") center/cover no-repeat; 
-    }
-    
-    .hero::before{ 
-      content:""; 
-      position:absolute; 
-      inset:0; border-radius:16px; 
-      background: rgba(0,0,0,.75); 
-    }
-    
-    .hero-inner { 
-      position:relative; 
-      z-index:1; padding:64px 32px; 
-      max-width:800px; 
-      display:flex; 
-      flex-direction:column; 
-      gap:14px; 
-    }
-    
-    .hero h1 { 
-      margin:0; 
-      font-size:40px; 
-      line-height:1.1; 
-    }
-    
-    .hero p { 
-      margin:0; 
-      font-size:17px; 
-      opacity:.95; 
-    }
-    
-    .cta { 
-      margin-top:16px; 
-      display:inline-block; 
-      width:auto; 
-      font-size:14px; 
-      padding:8px 14px; 
-      border-radius:8px; 
-      background:#c0c0c0; 
-      color:#121212; 
-      text-decoration:none; 
-      font-weight:700; 
-      box-shadow:0 6px 14px rgba(0,0,0,.25); 
-      transition: background .2s, transform .1s; 
-    }
-    
-    .cta:hover { 
-      background: var(--blue-dark); 
-      transform: translateY(-2px); 
-    }
-    
-    .controls { 
-      max-width:1200px; 
-      margin:24px auto; 
-      padding:20px; 
-      background:#1f1f1f; 
-      border-radius:12px; 
-      display:flex; gap:12px; 
-      align-items:center; 
-      flex-wrap:wrap; 
-      box-shadow: var(--shadow); 
-    }
-    
-    .controls .field { 
-      display:flex; 
-      flex-direction:column; 
-      gap:6px; 
-    }
-    
-    label { 
-      font-size:13px; 
-      color:#d0d0d0;
-    }
-    
-    input[type="text"], input[type="number"], input[type="month"], select { 
-      background:#151515; 
-      color: var(--text-main); 
-      padding:10px 12px; 
-      border-radius:8px; 
-      border:1px solid var(--border); 
-      min-width:160px; outline:none; 
-    }
-    
-    input:focus, select:focus { 
-      border-color: var(--blue); 
-      box-shadow: 0 0 0 3px rgba(192,192,192,.25); 
-    }
-    
-    .range-inline { 
-      display:flex; 
-      gap:8px; 
-      align-items:center; 
-    }
-    
-    .controls .btns { 
-      margin-left:auto; 
-      display:flex; 
-      gap:8px; 
-    }
-    
-    .card { 
-      background:var(--card); 
-      color: var(--text-main); 
-      border-radius:12px; overflow:hidden; 
-      box-shadow:var(--shadow); 
-      display:flex; 
-      flex-direction:column; 
-      transition: transform .2s ease, box-shadow .2s ease; 
-    }
-    
-    .card:hover { 
-      transform: translateY(-4px); 
-      box-shadow: 0 10px 24px rgba(0,0,0,.35); 
-    }
-    
-    .card .img { 
-      height:160px; 
-      background:#333 center/cover no-repeat;
-    }
-    
-    .card .content { 
-      padding:12px; 
-      display:flex; 
-      flex-direction:column; 
-      gap:10px; 
-      flex:1; 
-    }
-
-    /* 響應式網頁 */
-    .meta { 
-      display:flex; 
-      justify-content:space-between; 
-      align-items:center; 
-    }
-    
-    .price { 
-      font-weight:800; 
-      color: var(--price-color); 
-    }
-    
-    .tags,
-    .desc { 
-      color: var(--text-muted); 
-    }
-      
-    /* === 統一按鈕樣式（讓 <a> 跟 <button> 一致） === */
-    .btn{
-      display: inline-flex;           /* 統一用 flex 置中文字 */
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      min-height: 44px;               /* 統一高度 */
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 0;
-      font: inherit;
-      font-weight: 700;
-      line-height: 1;                 /* 修正不同 UA 預設行高 */
-      text-decoration: none;          /* 消除 <a> 預設底線 */
-      cursor: pointer;
-      transition: all .2s ease;
-    }
-    
-    /* === 主按鈕 === */
-    .btn.primary {
-      background: var(--blue);
-      color: #121212;
-    }
-      
-    .btn.primary:hover {
-      background: var(--blue-dark);
-    }
-    
-    /* === 次要按鈕（灰框） === */
-    .btn.ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-main);
-    }
-      
-    .btn.ghost:hover {
-      border-color: var(--blue);
-      color: var(--blue);
-    }
-    
-    /* === 連結型按鈕（少見的底線版） === */
-    .btn.link {
-      background: transparent;
-      text-decoration: underline;
-      color: var(--blue);
-      flex: 0;
-    }
-    
-    /* === 讓卡片內三顆按鈕等寬排列 === */
-    .card .actions .btn {
-      flex: 1;
-    }
-      
-    .table-wrap { 
-      overflow-x:auto; 
-      background:#1f1f1f; 
-      border-radius:12px; 
-      box-shadow: var(--shadow); 
-    }
-      
-    table { 
-      width:100%; 
-      border-collapse:collapse; 
-      min-width:900px; 
-    }
-      
-    th, td { 
-      padding:12px; 
-      border-bottom:1px solid #333; 
-      text-align:left; 
-      color: var(--text-main); 
-    }
-      
-    th { 
-      background:#222; 
-      color:#eee; 
-      position:sticky; 
-      top:0; 
-    }
-      
-    th.sortable { 
-      cursor:pointer; 
-      user-select:none; 
-    }
-      
-    th.sortable .arrow{ 
-      opacity:.6; 
-      margin-left:6px; 
-      font-size:12px; 
-    }
-      
-    .pager{ 
-      display:flex; 
-      gap:8px; 
-      align-items:center; 
-      justify-content:flex-end; 
-      margin-top:12px; 
-    }
-      
-    .pager .btn{ 
-      flex:0; 
-    }
-      
-    @media (max-width: 760px) {
-      .hero-inner { padding:32px 18px; }
-      .hero h1 { font-size:28px; }
-      .controls { padding:14px; }
-      .nav { padding:10px 12px; }
-    }
-      
-    /* 實價登錄分頁按鈕大小 */
-    #price-prev,#price-next{ 
-      min-width:110px;
-      height:44px;padding:10px 16px;
-      font-size:16px;
-      border-radius:10px; 
-    }
-      
-    /* 買屋分頁按鈕大小 */
-    #btn-prev-buy,#btn-next-buy{
-      min-width:110px;
-      height:44px;
-      padding:10px 16px;
-      font-size:16px;
+    .controls .field{
+      background:#242424;
+      padding:12px;
       border-radius:10px;
-    }
-      
-    /* 比價頁面分頁按鈕大小（清空清單 / 回到買屋列表） */
-    #app .pager .btn {
-      min-width: 110px;   /* 按鈕寬度 */
-      height: 44px;       /* 高度 */
-      padding: 10px 16px; /* 內距 */
-      font-size: 16px;    /* 字體大小 */
-      border-radius: 10px;/* 圓角 */
-    }
-      
-    /* --- 買屋卡片排版：桌機4張 / 平板3張 / 手機2張 --- */
-    /* 預設（桌機） */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 一行4張卡片 */
-      gap: 20px;
-    }
-    
-    /* 平板：螢幕 ≤ 1024px 時，一行3張 */
-    @media (max-width: 1024px) {
-      .grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
-    }
-    
-    /* 手機：螢幕 ≤ 760px 時，一行2張 */
-    @media (max-width: 760px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-    }
-      
-    /* === 多選下拉：黑底（未展開）→ 白底（展開） === */
-    /* 未展開：黑底銀字 */
-    .multi-select {
-      position: relative;
-      background: #1f1f1f;                 /* ★ 黑底 */
-      border: 1px solid #3a3a3a;
-      border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
-      min-width: 160px;
-      transition: all .2s ease;
-    }
-    
-    .multi-select-header {
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      color: #f0f0f0;                       /* 銀字 */
-      font-weight: 700;
-    }
-    
-    /* 展開：清單本體白底黑字 */
-    .multi-select-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #ffffff;                  /* 展開變白底 */
-      border: 1px solid #d0d0d0;
-      border-radius: 8px;
-      padding: 10px;
-      display: none;
-    
-      max-height: 260px;
-      overflow-y: auto;
-    
-      box-shadow: 0 10px 18px rgba(0,0,0,0.25);
-      z-index: 100;
-    }
-    
-    .multi-select.open .multi-select-list {
-      display: block;
-    }
-    
-    /* 展開後的選項：黑字、白底 */
-    .multi-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 6px;
-      margin-bottom: 2px;
-      border-radius: 6px;
-      transition: background .15s;
-      color: #000000;                       /* 黑字 */
-      cursor: pointer;
-    }
-    
-    .multi-item:hover {
-      background: rgba(0,0,0,0.08);         /* 淺灰 hover */
-    }
-    
-    /* checkbox 黑色 */
-    .multi-item input[type="checkbox"] {
-      accent-color: #000000;
-      width: 15px;
-      height: 15px;
-    }
-    
-    /* 展開時讓外框變白底風格（僅外框，不影響 header） */
-    .multi-select.open {
-      border-color: #cccccc;
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-
-    .controls .field {
-      background: #242424;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #3a3a3a;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    
-    .controls .field label {
-      font-size: 14px;
-      color: #ccc;
-      font-weight: 600;
+      border:1px solid #3a3a3a;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
     
     .controls .field input,
-    .controls .field select {
-      width: 100%;
-      padding: 8px 10px;
-      background: #1a1a1a;
-      border: 1px solid #555;
-      border-radius: 6px;
-      color: white;
+    .controls .field select{
+      width:100%;
+      padding:8px 10px;
+      background:#1a1a1a;
+      border:1px solid #555;
+      border-radius:6px;
+      color:white;
     }
-  </style>
+    
+    /* ========================== Cards ========================== */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+    }
+    @media(max-width:1024px){
+      .grid{ grid-template-columns:repeat(3,1fr); }
+    }
+    @media(max-width:760px){
+      .grid{ grid-template-columns:repeat(2,1fr); }
+    }
+    
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      box-shadow:var(--shadow);
+      transition:.2s;
+    }
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    
+    .card .img{
+      height:160px;
+      background:#333 center/cover no-repeat;
+    }
+    .card .content{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    
+    /* ======== 🔥 修正你壞掉的地方：meta / price / tags ======== */
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .price{
+      font-weight:800;
+      color:var(--price-color);
+    }
+    .tags,
+    .desc{
+      color:var(--text-muted);
+    }
+    
+    /* ======== 按鈕列（修復跑版） ======== */
+    .card .actions{
+      display:flex;
+      gap:8px;
+      padding:12px;
+      border-top:1px solid var(--border);
+    }
+    
+    /* ========================== Buttons ========================== */
+    .btn{
+      display:flex;
+      flex:1;
+      justify-content:center;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:8px;
+      font-weight:700;
+      text-decoration:none;
+      cursor:pointer;
+      min-height:44px;
+    }
+    .btn.primary{ background:var(--blue); color:#121212; }
+    .btn.primary:hover{ background:var(--blue-dark); }
+    .btn.ghost{
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--text-main);
+    }
+    .btn.ghost:hover{
+      border-color:var(--blue);
+      color:var(--blue);
+    }
+    .btn.link{ background:transparent;color:var(--blue);text-decoration:underline; }
+    
+    /* ========================== Tables ========================== */
+    .table-wrap{
+      background:#1f1f1f;
+      border-radius:12px;
+      overflow-x:auto;
+      box-shadow:var(--shadow);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+    th,td{
+      padding:12px;
+      border-bottom:1px solid #333;
+    }
+    
+    /* ========================== Pager ========================== */
+    .pager{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-top:12px;
+    }
+    .pager .btn{
+      flex:0;
+      min-width:110px;
+      height:44px;
+      font-size:16px;
+      border-radius:10px;
+    }
+    </style>
 </head>
   
 <body>
@@ -1667,6 +1378,7 @@
   </script>
 </body>
 </html>
+
 
 
 
