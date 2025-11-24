@@ -855,54 +855,46 @@
       };
     }
 
-    function (){
+    function applyFilters(){
       PAGE_STATE.page = 1;  // 篩選時自動回到第 1 頁
       const grid = $('#grid'); 
       if(!grid) return;
     
-      const f = getFilters();   // 這裡要包含 city、district、新增的 district
+      const f = getFilters();
     
       let results = LISTINGS_DATA.filter(d => {
     
         const city = (d.city || '').toLowerCase();
-        const district = (d._district || '').toLowerCase(); // 你資料裡這個欄位名稱正常是 _district
+        const district = (d._district || '').toLowerCase();
         const addrFull = (d._addr || '').toLowerCase();
     
-        // ====== 城市比對（完全分開） ======
         const matchCity = !f.city || city.includes(f.city);
-    
-        // ====== 行政區比對（新增這段） ======
         const matchDistrict = !f.district || district.includes(f.district);
-    
-        // ====== 路段模糊搜尋 ======
         const matchRoad = !f.road || addrFull.includes(f.road);
     
-        // ====== 型態比對 ======
         const matchType =
           !f.types.length ||
           f.types.some(t => (d.type || '').includes(t));
     
-        // ====== 價格區間 ======
         const matchPrice =
           d.priceWan >= f.minPrice &&
           d.priceWan <= f.maxPrice;
     
-        // ====== 最終回傳 ======
         return (
           matchCity &&
-          matchDistrict &&  // ★ 新增
+          matchDistrict &&
           matchRoad &&
           matchType &&
           matchPrice
         );
       });
     
-      // 排序
       if(f.sort === 'price_asc') results.sort((a,b)=>a.priceWan - b.priceWan);
       else if(f.sort === 'price_desc') results.sort((a,b)=>b.priceWan - a.priceWan);
     
       renderList(results);
     }
+
     function renderList(items){
       const grid = $('#grid'); 
       const noResults = $('#no-results');
@@ -966,7 +958,8 @@
     
       updateCompareBadges();
     }
-    /** ========= 實價登錄（維持原功能） ========= **/
+    
+    /** ========= 實價登錄 ========= **/
     const PRICE_DATA = [];
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:100, filters:{} };
 
@@ -1581,6 +1574,7 @@
   </script>
 </body>
 </html>
+
 
 
 
