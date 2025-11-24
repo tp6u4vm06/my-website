@@ -1186,19 +1186,19 @@
         </div>
         
         <div class="field">
-        <label>型態（可多選）</label>
-          <div class="multi-select" id="ptype-dropdown">
-            <div class="multi-select-header">
-              <span id="ptype-placeholder">全部</span>
-              <span>▼</span>
-             </div>
-            <div class="multi-select-list">
-              ${typeOptions.map(t => `
-                <label class="multi-item">
-                  <input type="checkbox" class="chk-type" value="${t}">
-                  ${t}
-                </label>
-              `).join('')}
+          <label>型態（可多選）</label>
+            <div class="multi-select" id="ptype-dropdown">
+              <div class="multi-select-header">
+                <span id="ptype-placeholder">全部</span>
+                <span>▼</span>
+               </div>
+              <div class="multi-select-list">
+                ${typeOptions.map(t => `
+                  <label class="multi-item">
+                    <input type="checkbox" class="chk-type" value="${t}">
+                    ${t}
+                  </label>
+                `).join('')}
             </div>
           </div>
         </div>
@@ -1575,6 +1575,7 @@
   </script>
 </body>
 </html>
+
 
 
 
