@@ -685,25 +685,28 @@
               </div>
             </div>
     
-            <div class="field">
-              <label for="type">房屋型態</label>
-              <select id="type">
-                <option value="">全部</option>
-                <option>土地</option>
-                <option>公寓</option>
-                <option>住宅大樓</option>
-                <option>別墅</option>
-                <option>店面</option>
-                <option>套房</option>
-                <option>透天</option>
-                <option>華夏</option>
-                <option>農舍</option>
-                <option>大樓</option>
-                <option>廠房</option>
-                <option>樓中樓</option>
-                <option>辦公商業大樓</option>
-                <option>豪宅</option>
-              </select>
+            <div class="field" style="position:relative;">
+              <label>型態（可多選）</label>
+              <div id="type-select" class="multi-select">
+                <span id="type-label">全部</span>x
+                <span style="margin-left:auto;">▾</span>
+              </div>
+            
+              <div id="type-dropdown" class="multi-dropdown">
+                <label><input type="checkbox" value="公寓"> 公寓</label>
+                <label><input type="checkbox" value="華廈"> 華廈</label>
+                <label><input type="checkbox" value="住宅大樓"> 住宅大樓</label>
+                <label><input type="checkbox" value="套房"> 套房</label>
+                <label><input type="checkbox" value="透天"> 透天</label>
+                <label><input type="checkbox" value="別墅"> 別墅</label>
+                <label><input type="checkbox" value="大樓"> 大樓</label>
+                <label><input type="checkbox" value="店面"> 店面</label>
+                <label><input type="checkbox" value="廠房"> 廠房</label>
+                <label><input type="checkbox" value="華夏"> 華夏</label>
+                <label><input type="checkbox" value="農舍"> 農舍</label>
+                <label><input type="checkbox" value="豪宅"> 豪宅</label>
+                <label><input type="checkbox" value="辦公商業大樓"> 辦公商業大樓</label>
+              </div>
             </div>
     
             ${ showSort ? `
@@ -852,7 +855,8 @@
         const matchCity = !f.city || city.includes(f.city);
         const matchDist = !f.dist || dist.includes(f.dist);
         const matchRoad = !f.road || road.includes(f.road);
-        const matchType = !f.type || d.type === f.type;
+        const selectedTypes = getSelectedTypes();
+        const matchType = selectedTypes.length === 0 || selectedTypes.includes(d.type);
         const matchPrice = d.priceWan >= f.minPrice && d.priceWan <= f.maxPrice;
     
         return matchCity && matchDist && matchRoad && matchType && matchPrice;
@@ -1544,6 +1548,7 @@
   </script>
 </body>
 </html>
+
 
 
 
