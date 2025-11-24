@@ -837,18 +837,24 @@
       `;
     }
 
-    /** ========= 買屋篩選/排序 ========= **/
+    // === 房屋型態多選：讀取已勾選項目 ===
+    function getSelectedTypes() {
+      return $$('.chk-type:checked').map(c => c.value);
+    }
+    
+    // ========= 買屋篩選/排序 =========
     function getFilters(){
       return {
-        city: (document.getElementById('city-input').value || '').trim().toLowerCase(),
-        district: (document.getElementById('district-input').value || '').trim().toLowerCase(),
-        road: (document.getElementById('road-input').value || '').trim().toLowerCase(),
-        types: getSelectedTypes(), // 你原本就有的方法
-        minPrice: Number(document.getElementById('min-input').value) || 0,
-        maxPrice: Number(document.getElementById('max-input').value) || 99999999,
-        sort: document.getElementById('sort-select').value
+        city:      (document.getElementById('city-input')?.value || '').trim().toLowerCase(),
+        district:  (document.getElementById('district-input')?.value || '').trim().toLowerCase(),
+        road:      (document.getElementById('road-input')?.value || '').trim().toLowerCase(),
+        types:     getSelectedTypes(),
+        minPrice:  Number(document.getElementById('min-input')?.value) || 0,
+        maxPrice:  Number(document.getElementById('max-input')?.value) || 99999999,
+        sort:      document.getElementById('sort-select')?.value || 'relevance'
       };
     }
+
     function (){
       PAGE_STATE.page = 1;  // 篩選時自動回到第 1 頁
       const grid = $('#grid'); 
@@ -1394,10 +1400,6 @@
       const h = window.location.hash || '#/home';
       setActiveNav(h);
       const app = $('#app');
-
-      function getSelectedTypes() {
-        return $$('.chk-type:checked').map(c => c.value);
-      }
     
       /* ==================== #/buy ==================== */
       if (h.startsWith('#/buy')) {
@@ -1579,6 +1581,7 @@
   </script>
 </body>
 </html>
+
 
 
 
