@@ -1332,79 +1332,98 @@
       const h = window.location.hash || '#/home';
       setActiveNav(h);
       const app = $('#app');
-
+    
+      /* ==================== #/buy ==================== */
       if (h.startsWith('#/buy')) {
         app.innerHTML = PageBuy();
+    
         ensureLoadListings().then(()=>{
+    
+          // 🔍 搜尋按鈕
           $('#btn-search')?.addEventListener('click', applyFilters);
+    
+          // 🔄 重設按鈕
           $('#btn-reset')?.addEventListener('click', ()=>{
             $('#search-city').value='';
             $('#search-road').value='';
             $('#min-price').value='';
             $('#max-price').value='';
             $('#sort').value='relevance';
-          
-            // 清空所有型態多選 checkbox
+    
+            // 清空型態
             $$('.chk-type').forEach(c => c.checked = false);
-          
+            updateTypeLabel();
+    
             applyFilters();
           });
+    
+          // 讀取首頁搜尋參數
           const q = h.split('?')[1];
-          const typesStr = p.get('types') || '';
-          const types = typesStr ? typesStr.split(',') : [];
-          $$('.chk-type').forEach(c => {
-            c.checked = types.includes(c.value);
-          });
-          updateTypeLabel();
-            if (q) {
-              const p = new URLSearchParams(q);
-              if($('#search-city')) $('#search-city').value = p.get('city') || '';
-              if($('#search-road')) $('#search-road').value = p.get('road') || ''; // 新增
-              if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
-              if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
-              if($('#sort'))        $('#sort').value        = p.get('sort') || 'relevance';
-            }
+          if (q) {
+            const p = new URLSearchParams(q);
+    
+            if($('#search-city')) $('#search-city').value = p.get('city') || '';
+            if($('#search-road')) $('#search-road').value = p.get('road') || '';
+            if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
+            if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
+    
+            // 型態多選
+            const typesStr = p.get('types') || '';
+            const types = typesStr ? typesStr.split(',') : [];
+            $$('.chk-type').forEach(c => c.checked = types.includes(c.value));
+            updateTypeLabel();
+    
+            if($('#sort')) $('#sort').value = p.get('sort') || 'relevance';
+          }
+    
+          // 進入頁面即套用篩選
           applyFilters();
         });
+    
+        return;
       }
-      else if (h.startsWith('#/compare')) {
+    
+      /* ==================== #/compare ==================== */
+      if (h.startsWith('#/compare')) {
         app.innerHTML = PageCompare();
+        return;
       }
-      else if (h.startsWith('#/price')) {
+    
+      /* ==================== #/price ==================== */
+      if (h.startsWith('#/price')) {
         app.innerHTML = PagePrice();
         bindPriceControls();
-        autoLoadFromPresetSilent().then(() => {
-          applyPrice();
-        });
+        autoLoadFromPresetSilent().then(() => applyPrice());
+        return;
       }
-      else {
-        app.innerHTML = PageHome();
-        ensureLoadListings().then(()=>{
-          $('#btn-search')?.addEventListener('click', ()=>{
-            const types = $$('.chk-type:checked').map(c => c.value);
-            const params = new URLSearchParams({
-              city: $('#search-city').value,
-              road: $('#search-road').value,
-              min:  $('#min-price').value,
-              max:  $('#max-price').value,
-              types: types.join(','),
-              sort: $('#sort').value
-            });
-            route('#/buy?' + params.toString());
-            
-          $('#btn-reset')?.addEventListener('click', ()=>{
-            $('#search-city').value='';
-            $('#search-road').value='';          // 新增
-            $('#min-price').value='';
-            $('#max-price').value='';
-            $('#type').value='';
-            $('#sort').value='relevance';
-            updateCompareBadges();
+    
+      /* ==================== #/home (預設) ==================== */
+      app.innerHTML = PageHome();
+    
+      ensureLoadListings().then(()=>{
+        $('#btn-search')?.addEventListener('click', ()=>{
+          const types = $$('.chk-type:checked').map(c => c.value);
+          const params = new URLSearchParams({
+            city: $('#search-city').value,
+            road: $('#search-road').value,
+            min:  $('#min-price').value,
+            max:  $('#max-price').value,
+            types: types.join(','),
+            sort: $('#sort').value
           });
-          updateCompareBadges();
+          route('#/buy?' + params.toString());
         });
-      }
-      updateCompareBadges();
+    
+        $('#btn-reset')?.addEventListener('click', ()=>{
+          $('#search-city').value='';
+          $('#search-road').value='';
+          $('#min-price').value='';
+          $('#max-price').value='';
+          $('#sort').value='relevance';
+        });
+    
+        updateCompareBadges();
+      });
     }
 
     window.addEventListener('hashchange', renderRoute);
@@ -1494,6 +1513,7 @@
   </script>
 </body>
 </html>
+
 
 
 
