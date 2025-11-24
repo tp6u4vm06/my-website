@@ -850,7 +850,7 @@
         sort: document.getElementById('sort-select').value
       };
     }
-    function applyFilters(){
+    function (){
       PAGE_STATE.page = 1;  // 篩選時自動回到第 1 頁
       const grid = $('#grid'); 
       if(!grid) return;
@@ -1341,7 +1341,7 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
-          <td>${r.age}</td>   <!-- ★ 新增 -->
+          <td>${r.age}</td>   <!-- 新增 -->
         </tr>
       `).join('');
       const info = $('#price-info');
@@ -1398,6 +1398,10 @@
       const h = window.location.hash || '#/home';
       setActiveNav(h);
       const app = $('#app');
+
+      function getSelectedTypes() {
+        return $$('.chk-type:checked').map(c => c.value);
+      }
     
       /* ==================== #/buy ==================== */
       if (h.startsWith('#/buy')) {
@@ -1405,10 +1409,10 @@
     
         ensureLoadListings().then(()=>{
     
-          // 🔍 搜尋按鈕
+          // 搜尋按鈕
           $('#btn-search')?.addEventListener('click', applyFilters);
     
-          // 🔄 重設按鈕
+          // 重設按鈕
           $('#btn-reset')?.addEventListener('click', ()=>{
             $('#search-city').value='';
             $('#search-road').value='';
@@ -1579,6 +1583,7 @@
   </script>
 </body>
 </html>
+
 
 
 
