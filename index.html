@@ -825,7 +825,6 @@
                 <th>價格</th>
                 <th>特色</th>
                 <th>連結</th>
-                
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -948,14 +947,14 @@
       if(PAGE_STATE.page>1){ 
         PAGE_STATE.page--; 
         renderList(items);
-        goTop();            // ★ 切頁後捲到上方
+        goTop();            //  切頁後捲到上方
       }
     });
     $('#btn-next-buy')?.addEventListener('click', ()=>{
       if(PAGE_STATE.page<pages){ 
         PAGE_STATE.page++; 
         renderList(items);
-        goTop();            // ★ 切頁後捲到上方
+        goTop();            //  切頁後捲到上方
       }
     });
     
@@ -1172,7 +1171,6 @@
     
       return `
       <section class="controls" role="region" aria-label="實價篩選">
-    
         <div class="field">
           <label>城市</label>
           <input id="p-city" type="text" placeholder="例如：臺北市">
@@ -1187,14 +1185,13 @@
           <label>路段</label>
           <input id="p-road" type="text" placeholder="例如：忠孝東路">
         </div>
-    
         
-          <label>型態（可多選）</label>
+        <label>型態（可多選）</label>
           <div class="multi-select" id="ptype-dropdown">
             <div class="multi-select-header">
               <span id="ptype-placeholder">全部</span>
               <span>▼</span>
-            </div>
+             </div>
             <div class="multi-select-list">
               ${typeOptions.map(t => `
                 <label class="multi-item">
@@ -1582,6 +1579,7 @@
   </script>
 </body>
 </html>
+
 
 
 
