@@ -1347,19 +1347,24 @@
             // 清空所有型態多選 checkbox
             $$('.chk-type').forEach(c => c.checked = false);
           
-            renderList(LISTINGS_DATA);
+            applyFilters();
           });
           const q = h.split('?')[1];
+          const typesStr = p.get('types') || '';
+          const types = typesStr ? typesStr.split(',') : [];
+          $$('.chk-type').forEach(c => {
+            c.checked = types.includes(c.value);
+          });
+          updateTypeLabel();
             if (q) {
               const p = new URLSearchParams(q);
               if($('#search-city')) $('#search-city').value = p.get('city') || '';
               if($('#search-road')) $('#search-road').value = p.get('road') || ''; // 新增
               if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
               if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
-              if($('#type'))        $('#type').value        = p.get('type') || '';
               if($('#sort'))        $('#sort').value        = p.get('sort') || 'relevance';
             }
-          renderList(LISTINGS_DATA);
+          applyFilters();
         });
       }
       else if (h.startsWith('#/compare')) {
@@ -1376,16 +1381,17 @@
         app.innerHTML = PageHome();
         ensureLoadListings().then(()=>{
           $('#btn-search')?.addEventListener('click', ()=>{
+            const types = $$('.chk-type:checked').map(c => c.value);
             const params = new URLSearchParams({
-              city: $('#search-city').value || '',
-              road: $('#search-road').value || '',   // 新增
-              min:  $('#min-price').value || '',
-              max:  $('#max-price').value || '',
-              type: $('#type').value || '',
-              sort: $('#sort').value || 'relevance'
+              city: $('#search-city').value,
+              road: $('#search-road').value,
+              min:  $('#min-price').value,
+              max:  $('#max-price').value,
+              types: types.join(','),
+              sort: $('#sort').value
             });
             route('#/buy?' + params.toString());
-          });
+            
           $('#btn-reset')?.addEventListener('click', ()=>{
             $('#search-city').value='';
             $('#search-road').value='';          // 新增
@@ -1488,6 +1494,7 @@
   </script>
 </body>
 </html>
+
 
 
 
