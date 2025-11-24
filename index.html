@@ -635,67 +635,68 @@
     }
 
     function Controls({ showSort=false }) {
-      const typeOptions = [
-        "大樓","公寓","透天","別墅","店面","辦公","華廈"
-      ];
-    
       return `
-      <section class="controls" role="region" aria-label="篩選工具">
+          <section class="controls" role="region" aria-label="篩選工具">
     
-        <div class="field">
-          <label for="search-city">地區搜尋</label>
-          <input id="search-city" type="text" placeholder="輸入城市或行政區（例如：臺北市）">
-        </div>
-    
-        <div class="field">
-          <label for="search-road">路段</label>
-          <input id="search-road" type="text" placeholder="輸入路名關鍵字（例如：忠孝東路）">
-        </div>
-    
-        <div class="field">
-          <label>價格（萬）</label>
-          <div class="range-inline">
-            <input id="min-price" type="number" placeholder="最低 (萬)" min="0" style="width:120px">
-            <input id="max-price" type="number" placeholder="最高 (萬)" min="0" style="width:120px">
-          </div>
-        </div>
-        
-        <div class="field">
-          <label>房屋型態（可多選）</label>
-    
-          <div class="multi-select" id="type-dropdown">
-            <div class="multi-select-header">
-              <span id="type-placeholder">全部</span>
-              <span>▼</span>
+            <div class="field">
+              <label for="f-city">城市</label>
+              <input id="f-city" type="text" placeholder="例：台北市">
             </div>
-            <div class="multi-select-list">
-              ${typeOptions.map(t => `
-                <label class="multi-item">
-                  <input type="checkbox" class="chk-type" value="${t}">
-                  ${t}
-                </label>
-              `).join('')}
+    
+            <div class="field">
+              <label for="f-dist">行政區</label>
+              <input id="f-dist" type="text" placeholder="例：大安區">
             </div>
-          </div>
-        </div>
     
-        ${ showSort ? `
-        <div class="field">
-          <label for="sort">排序</label>
-          <select id="sort">
-            <option value="relevance">相關性</option>
-            <option value="price_asc">價格：由低到高</option>
-            <option value="price_desc">價格：由高到低</option>
-          </select>
-        </div>
-        `:''}
+            <div class="field">
+              <label for="f-road">路段</label>
+              <input id="f-road" type="text" placeholder="例：忠孝東路">
+            </div>
     
-        <div class="btns">
-          <button id="btn-search" class="btn primary">搜尋</button>
-          <button id="btn-reset" class="btn ghost">重設</button>
-        </div>
+            <div class="field">
+              <label>價格（萬）</label>
+              <div class="range-inline">
+                <input id="min-price" type="number" placeholder="最低 (萬)" min="0" style="width:120px">
+                <input id="max-price" type="number" placeholder="最高 (萬)" min="0" style="width:120px">
+              </div>
+            </div>
     
-      </section>`;
+            <div class="field">
+              <label for="type">房屋型態</label>
+              <select id="type">
+                <option value="">全部</option>
+                <option>土地</option>
+                <option>公寓</option>
+                <option>住宅大樓</option>
+                <option>別墅</option>
+                <option>店面</option>
+                <option>套房</option>
+                <option>透天</option>
+                <option>華夏</option>
+                <option>農舍</option>
+                <option>大樓</option>
+                <option>廠房</option>
+                <option>樓中樓</option>
+                <option>辦公商業大樓</option>
+                <option>豪宅</option>
+              </select>
+            </div>
+    
+            ${ showSort ? `
+            <div class="field">
+              <label for="sort">排序</label>
+              <select id="sort">
+                <option value="relevance">相關性</option>
+                <option value="price_asc">價格：由低到高</option>
+                <option value="price_desc">價格：由高到低</option>
+              </select>
+            </div>` : ''}
+    
+            <div class="btns">
+              <button id="btn-search" class="btn primary">搜尋</button>
+              <button id="btn-reset" class="btn ghost">重設</button>
+            </div>
+          </section>`;
     }
 
     function PageHome(){
@@ -803,33 +804,39 @@
     /** ========= 買屋篩選/排序 ========= **/
     function getFilters(){
       return {
-        city: ($('#search-city')?.value || '').trim().toLowerCase(),
-        road: ($('#search-road')?.value || '').trim().toLowerCase(),  // 新增路段
+        city: ($('#f-city')?.value || '').trim().toLowerCase(),
+        dist: ($('#f-dist')?.value || '').trim().toLowerCase(),
+        road: ($('#f-road')?.value || '').trim().toLowerCase(),
         minPrice: Number($('#min-price')?.value) || 0,
         maxPrice: Number($('#max-price')?.value) || Infinity,
-        types: $$('.chk-type:checked').map(c => c.value),   // 多選
+        type: $('#type')?.value || '',
         sort: $('#sort')?.value || 'relevance'
       };
     }
     function applyFilters(){
-      PAGE_STATE.page = 1;  // 篩選時自動回到第 1 頁
-      const grid = $('#grid'); if(!grid) return;
+      PAGE_STATE.page = 1;
+      const grid = $('#grid');
+      if(!grid) return;
+    
       const f = getFilters();
+    
       let results = LISTINGS_DATA.filter(d=>{
-        const cityDist = (d.city + ' ' + (d._district || '')).toLowerCase();
-        const addrFull = (d._addr || '').toLowerCase();
-      
-        const matchCity = !f.city || cityDist.includes(f.city);
-        const matchRoad = !f.road || addrFull.includes(f.road);
-        const matchType =
-          !f.types.length ||
-          f.types.some(t => (d.type || '').includes(t));
+        const city = (d.city || '').toLowerCase();
+        const dist = (d._district || '').toLowerCase();
+        const road = (d._addr || '').toLowerCase();
+    
+        const matchCity = !f.city || city.includes(f.city);
+        const matchDist = !f.dist || dist.includes(f.dist);
+        const matchRoad = !f.road || road.includes(f.road);
+        const matchType = !f.type || d.type === f.type;
         const matchPrice = d.priceWan >= f.minPrice && d.priceWan <= f.maxPrice;
-      
-        return matchCity && matchRoad && matchType && matchPrice;
+    
+        return matchCity && matchDist && matchRoad && matchType && matchPrice;
       });
+    
       if(f.sort === 'price_asc') results.sort((a,b)=>a.priceWan - b.priceWan);
       else if(f.sort === 'price_desc') results.sort((a,b)=>b.priceWan - a.priceWan);
+    
       renderList(results);
     }
     function renderList(items){
@@ -1513,6 +1520,7 @@
   </script>
 </body>
 </html>
+
 
 
 
