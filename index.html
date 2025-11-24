@@ -675,18 +675,27 @@
           <label>行政區</label>
           <input id="district-input" type="text" placeholder="例如：大安區">
         </div>
-    
+        
         <div class="field">
-          <label for="search-road">路段</label>
-          <input id="search-road" type="text" placeholder="輸入路名關鍵字（例如：忠孝東路）">
+          <label>路段</label>
+          <input id="road-input" type="text" placeholder="例如：忠孝東路">
         </div>
-    
+        
         <div class="field">
           <label>價格（萬）</label>
           <div class="range-inline">
-            <input id="min-price" type="number" placeholder="最低 (萬)" min="0" style="width:120px">
-            <input id="max-price" type="number" placeholder="最高 (萬)" min="0" style="width:120px">
+            <input id="min-input" type="number" placeholder="最低 (萬)" min="0">
+            <input id="max-input" type="number" placeholder="最高 (萬)" min="0">
           </div>
+        </div>
+        
+        <div class="field">
+          <label>排序</label>
+          <select id="sort-select">
+            <option value="relevance">相關性</option>
+            <option value="price_asc">價格：由低到高</option>
+            <option value="price_desc">價格：由高到低</option>
+          </select>
         </div>
         
         <div class="field">
@@ -854,10 +863,10 @@
         const district = (d._district || '').toLowerCase(); // 你資料裡這個欄位名稱正常是 _district
         const addrFull = (d._addr || '').toLowerCase();
     
-        // ====== ✦ 城市比對（完全分開） ======
+        // ====== 城市比對（完全分開） ======
         const matchCity = !f.city || city.includes(f.city);
     
-        // ====== ✦ 行政區比對（新增這段） ======
+        // ====== 行政區比對（新增這段） ======
         const matchDistrict = !f.district || district.includes(f.district);
     
         // ====== 路段模糊搜尋 ======
@@ -1169,17 +1178,17 @@
           <input id="p-city" type="text" placeholder="例如：臺北市">
         </div>
     
-        <div class="field">
+        
           <label>行政區</label>
           <input id="p-dist" type="text" placeholder="例如：大安區">
         </div>
     
-        <div class="field">
+        
           <label>路段</label>
           <input id="p-road" type="text" placeholder="例如：忠孝東路">
         </div>
     
-        <div class="field">
+        
           <label>型態（可多選）</label>
     
           <div class="multi-select" id="ptype-dropdown">
@@ -1198,17 +1207,17 @@
           </div>
         </div>
     
-        <div class="field">
+        
           <label>成交月(起)</label>
           <input id="p-from" type="month">
         </div>
     
-        <div class="field">
+        
           <label>成交月(迄)</label>
           <input id="p-to" type="month">
         </div>
     
-        <div class="field">
+        
           <label>總價(萬)</label>
           <div class="range-inline">
             <input id="p-min-total" type="number" placeholder="最低" min="0" style="width:120px">
@@ -1216,7 +1225,7 @@
           </div>
         </div>
     
-        <div class="field">
+        
           <label>單價(萬/坪)</label>
           <div class="range-inline">
             <input id="p-min-unit" type="number" placeholder="最低" min="0" style="width:120px">
@@ -1224,7 +1233,7 @@
           </div>
         </div>
 
-        <div class="field">
+        
           <label>屋齡(年)</label>
           <div class="range-inline">
             <input id="p-min-age" type="number" placeholder="最低" min="0" style="width:120px">
@@ -1570,5 +1579,6 @@
   </script>
 </body>
 </html>
+
 
 
