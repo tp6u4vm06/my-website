@@ -373,6 +373,36 @@
       width: 90%;
       box-sizing: border-box;
     }
+
+    /* --- 只控制搜尋欄的 select / input --- */
+    .search-bar-wrap select,
+    .search-bar-wrap input{
+      flex: 1;
+      padding: 14px 16px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #000;
+      box-sizing: border-box;
+    }
+    
+    /* 搜尋欄按鈕 */
+    .search-btn{
+      padding: 14px 22px;
+      background: #4da3ff;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    
+    .search-btn:hover{
+      background: #1e8bff;
+    }
     </style>
 </head>
   
@@ -1553,3 +1583,4 @@
   </script>
 </body>
 </html>
+
