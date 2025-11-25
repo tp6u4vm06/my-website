@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
+  < charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>易居房EG City｜首頁/買屋/比價/實價登錄</title>
   <style>
@@ -199,16 +199,17 @@
       justify-content:space-between;
       align-items:center;
     }
+    /* [買屋]價格籤 */
     .price{
       font-weight:800;
       color:var(--price-color);
+      font-size : 20px;  
     }
-    .tags,
-    .desc{
+    .tags,.desc {
       color:var(--text-muted);
     }
     
-    /* ======== 按鈕列（修復跑版） ======== */
+    /* ========================== 按鈕列 ========================== */
     .card .actions{
       display:flex;
       gap:8px;
@@ -275,11 +276,10 @@
     }
 
      /* === 多選下拉：黑底（未展開）→ 白底（展開） === */
-
     /* 未展開：黑底銀字 */
     .multi-select {
       position: relative;
-      background: #1f1f1f;                 /* ★ 黑底 */
+      background: #1f1f1f;                 /* 黑底 */
       border: 1px solid #3a3a3a;
       border-radius: 8px;
       cursor: pointer;
@@ -355,8 +355,6 @@
       gap: 10px;            /* 兩個按鈕之間的距離 */
       align-items: center;
     }
-
-
     </style>
 </head>
   
@@ -374,7 +372,7 @@
       <a href="#/home" id="nav-home">首頁</a>
       <a href="#/buy" id="nav-buy">買屋</a>
       <a href="#/compare" id="nav-compare">比價</a>
-      <a href="#/price" id="nav-price">實價登錄</a>
+      <a href="#/" id="nav-">實價登錄</a>
     </nav>
   </header>
 
@@ -483,7 +481,7 @@
       const layout   = getCell(map, COLS.layout);
       const ageTxt   = getCell(map, COLS.age);         // 可能是數字或年月
       const extra    = getCell(map, COLS.desc);        // 若 CSV 有「特色/描述」就也帶上
-      const priceStr = getCell(map, COLS.priceWan);
+      const priceStr = getCell(map, COLSWan);
     
       // 價格（信義/永慶常見：2,188萬）
       const priceWan = num(priceStr);
@@ -578,10 +576,10 @@
       const seen = new Set();
       const unique = [];
       for(const r of arr){
-        const key = [r.city, r._district||"", r.title, r.priceWan, r.areaPing||""].join("|");
+        const key = [r.city, r._district||"", r.title, rWan, r.areaPing||""].join("|");
         if(!seen.has(key)){ seen.add(key); unique.push(r); }
       }
-      unique.sort((a,b)=> b.priceWan - a.priceWan);
+      unique.sort((a,b)=> bWan - aWan);
       unique.forEach((r,i)=> r.id = i+1);
       return unique;
     }
@@ -620,7 +618,7 @@
         <article class="card" aria-label="房屋卡片">
           <div class="img" style="background-image:url('${item.img}')" role="img" aria-label="${item.title}"></div>
           <div class="content">
-            <div class="meta">
+            <div class="">
               <div>
                 <!-- csv[物件標題] -->
                 <div style="font-weight:600">${item.title}</div>
@@ -628,7 +626,7 @@
                 <div class="tags">${cityDist} • ${item.type}</div>
               </div>
               <!-- 價格籤 -->
-              <div class="price" style="font-size:12px;">NT$ ${formatWan(item.priceWan)}</div>
+              <div class="price">NT$ ${formatWan(itemWan)}</div>
             </div>
           </div>
 
@@ -645,14 +643,14 @@
         <article class="card">
           <div class="img" style="background-image:url('${p.img}')" role="img" aria-label="${p.name}"></div>
           <div class="content">
-            <div class="meta">
+            <div class="">
               <div style="font-weight:800">${p.name}</div>
               <div class="tags">${p.city} • ${p.builder}</div>
             </div>
             <div class="desc">${ p.highlights.map(h => '#' + h).join(' ') }</div>
           </div>
           <div class="actions">
-            <button class="btn ghost">開價約 NT$ ${formatWan(p.priceWanFrom)}</button>
+            <button class="btn ghost">開價約 NT$ ${formatWan(pWanFrom)}</button>
             <a href="${p.linkBrochure}" target="_blank" class="btn link" rel="noopener">預約賞屋</a>
           </div>
         </article>`;
@@ -737,7 +735,7 @@
     }
 
     function PageHome(){
-      const top6 = (LISTINGS_DATA.length ? [...LISTINGS_DATA] : []).sort((a,b)=> b.priceWan - a.priceWan).slice(0,6);
+      const top6 = (LISTINGS_DATA.length ? [...LISTINGS_DATA] : []).sort((a,b)=> bWan - aWan).slice(0,6);
       const newsRows = [
         { title:"地產天下", source:"自由時報", url:"https://estate.ltn.com.tw/" },
         { title:"房市即時", source:"工商時報", url:"https://www.ctee.com.tw/livenews/house" },
@@ -805,7 +803,7 @@
           <td>${it.title}</td>
           <td>${it.city}${it._district ? ' ' + it._district : ''}</td>
           <td>${it.type}</td>
-          <td>NT$ ${formatWan(it.priceWan)}</td>
+          <td>NT$ ${formatWan(itWan)}</td>
           <td>${it.desc || '—'}</td>
           <td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener" font-size="14px">前往</a>` : '—' }</td>
           
@@ -877,8 +875,8 @@
           f.types.some(t => (d.type || '').includes(t));
     
         const matchPrice =
-          d.priceWan >= f.minPrice &&
-          d.priceWan <= f.maxPrice;
+          dWan >= f.minPrice &&
+          dWan <= f.maxPrice;
     
         return (
           matchCity &&
@@ -889,8 +887,8 @@
         );
       });
     
-      if(f.sort === 'price_asc') results.sort((a,b)=>a.priceWan - b.priceWan);
-      else if(f.sort === 'price_desc') results.sort((a,b)=>b.priceWan - a.priceWan);
+      if(f.sort === 'price_asc') results.sort((a,b)=>aWan - bWan);
+      else if(f.sort === 'price_desc') results.sort((a,b)=>bWan - aWan);
     
       renderList(results);
     }
@@ -1512,7 +1510,7 @@
           <h3 style="margin-top:0; font-size:20px;">${item.title}</h3>
           <p><strong>地點：</strong>${where}</p>
           <p><strong>房屋類型：</strong>${item.type}</p>
-          <p><strong>價格：</strong>NT$ ${item.priceWan.toLocaleString()} 萬</p>
+          <p><strong>價格：</strong>NT$ ${itemWan.toLocaleString()} 萬</p>
           <p><strong>詳細資訊：</strong><br>${item.desc || '—'}</p>
           <div style="text-align:right; margin-top:16px;">
             <button style="padding:8px 14px; border:0; border-radius:8px; background:#c0c0c0; color:#121212; font-weight:700; cursor:pointer;">關閉</button>
@@ -1575,6 +1573,7 @@
   </script>
 </body>
 </html>
+
 
 
 
