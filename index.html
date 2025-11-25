@@ -124,16 +124,6 @@
       color:white;
     }
 
-    @media(max-width: 600px){
-      .controls{
-        grid-template-columns: repeat(2, 1fr) !important;
-      }
-    }
-
-    .controls .field{
-      min-width: 0;
-    }
-
     /* 比價頁面分頁按鈕大小（清空清單 / 回到買屋列表） */
     #app .pager .btn {
       min-width: 110px;   /* 按鈕寬度 */
@@ -363,6 +353,18 @@
       object-fit:contain; 
       display:block; 
       border-radius:12px; 
+    }
+
+    /* === 手機版：強制兩欄排列 === */
+    @media(max-width: 600px){
+      .controls{
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+    
+    /* 避免欄位被撐爆 */
+    .controls .field{
+      min-width: 0;
     }
     </style>
 </head>
@@ -1544,6 +1546,7 @@
   </script>
 </body>
 </html>
+
 
 
 
