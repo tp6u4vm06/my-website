@@ -355,16 +355,23 @@
       border-radius:12px; 
     }
 
-    /* === 手機版：強制兩欄排列 === */
+    /* 手機版強制兩欄 */
     @media(max-width: 600px){
       .controls{
         grid-template-columns: repeat(2, 1fr) !important;
       }
     }
     
-    /* 避免欄位被撐爆 */
+    /* 防止欄位溢出 */
     .controls .field{
       min-width: 0;
+    }
+    
+    /* 讓輸入框不把欄位撐爆 */
+    .controls .field input,
+    .controls .field select {
+      width: 100%;
+      box-sizing: border-box;
     }
     </style>
 </head>
@@ -1546,6 +1553,7 @@
   </script>
 </body>
 </html>
+
 
 
 
