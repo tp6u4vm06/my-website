@@ -373,58 +373,6 @@
       width: 90%;
       box-sizing: border-box;
     }
-
-
-    /* --- 591 風格搜尋條 --- */
-    .search-bar-wrap{
-      max-width: 750px;
-      margin: -40px auto 40px; /* 提到 hero 圖裡 */
-      padding: 20px;
-      background: rgba(0,0,0,0.55);
-      border-radius: 16px;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-    }
-    
-    .search-bar{
-      display: flex;
-      gap: 12px;
-    }
-    
-    .search-bar select,
-    .search-bar input{
-      flex: 1;
-      padding: 14px 16px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      background: #fff;
-      color: #000;
-      box-sizing: border-box;
-    }
-    
-    .search-btn{
-      padding: 14px 22px;
-      background: #4da3ff;        /* 主色（科技藍） */
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-    }
-    
-    .search-btn:hover{
-      background: #1e8bff;
-    }
-    
-    /* 手機版直排 */
-    @media(max-width: 600px){
-      .search-bar{
-        flex-direction: column;
-      }
-    }
     </style>
 </head>
   
@@ -791,22 +739,12 @@
     }
 
     function PageHome(){
-      const top6 = (LISTINGS_DATA.length ? [...LISTINGS_DATA] : [])
-                    .sort((a,b)=> b.priceWan - a.priceWan)
-                    .slice(0,6);
-    
+      const top6 = (LISTINGS_DATA.length ? [...LISTINGS_DATA] : []).sort((a,b)=> b.priceWan - a.priceWan).slice(0,6);
       const newsRows = [
         { title:"地產天下", source:"自由時報", url:"https://estate.ltn.com.tw/" },
         { title:"房市即時", source:"工商時報", url:"https://www.ctee.com.tw/livenews/house" },
         { title:"591 房市新聞", source:"591", url:"https://news.591.com.tw/" },
-      ].map(n => `
-        <tr>
-          <td>${n.title}</td>
-          <td>${n.source}</td>
-          <td><a class="btn link" href="${n.url}" target="_blank" rel="noopener">查看</a></td>
-        </tr>
-      `).join('');
-    
+      ].map(n => '<tr><td>' + n.title + '</td><td>' + n.source + '</td><td><a class="btn link" href="' + n.url + '" target="_blank" rel="noopener">查看</a></td></tr>').join('');
       return `
         <section class="hero" aria-label="主視覺">
           <div class="hero-inner">
@@ -815,51 +753,22 @@
             <a class="cta" href="#/buy">我要找房</a>
           </div>
         </section>
-    
-        <!--  591 風格搜尋列放在這裡 -->
-        <div class="search-bar-wrap">
-          <div class="search-bar">
-            <select id="city">
-              <option value="">選擇城市</option>
-              <option value="台北市">台北市</option>
-              <option value="新北市">新北市</option>
-              <option value="桃園市">桃園市</option>
-              <option value="台中市">台中市</option>
-              <option value="高雄市">高雄市</option>
-            </select>
-    
-            <input id="keyword" type="text" placeholder="輸入社區名、路名或關鍵字">
-    
-            <button class="search-btn" onclick="goSearch()">搜尋</button>
-          </div>
-        </div>
-        <!--  結束搜尋列 -->
-    
         ${Controls({ showSort:true })}
-    
         <section>
           <h2 class="section-title">熱門物件</h2>
-          ${
-            top6.length
-            ? `<div class="grid">${top6.map(card).join('')}</div>`
-            : `<div class="desc" style="color:var(--muted)">尚未載入待售資料，請稍候或前往買屋頁面。</div>`
-          }
+          ${ top6.length
+            ? `<div class="grid">${ top6.map(card).join('') }</div>`
+            : `<div class="desc" style="color:var(--muted)">尚未載入待售資料，請稍候或前往買屋頁面。</div>` }
         </section>
-    
         <section style="margin-top:28px;">
           <h2 class="section-title">新建案</h2>
-          <div class="grid">
-            ${ NEW_PROJECTS.map(projectCard).join('') }
-          </div>
+          <div class="grid">${ NEW_PROJECTS.map(projectCard).join('') }</div>
         </section>
-    
         <section style="margin-top:28px;">
           <h2 class="section-title">即時新聞</h2>
           <div class="table-wrap">
             <table aria-label="房市新聞">
-              <thead>
-                <tr><th style="width:60%">標題</th><th>來源</th><th>連結</th></tr>
-              </thead>
+              <thead><tr><th style="width:60%">標題</th><th>來源</th><th>連結</th></tr></thead>
               <tbody>${newsRows}</tbody>
             </table>
           </div>
@@ -1641,29 +1550,6 @@
         else label.textContent = checked.length + " 個已選";
       });
     }
-
-    function goSearch(){
-      const city = document.getElementById("city").value.trim();
-      const kw   = document.getElementById("keyword").value.trim();
-    
-      route('#/buy');
-    
-      // 傳進去你的買屋頁面篩選條件
-      setTimeout(() => {
-        if(city) document.getElementById("city-input").value = city;
-        if(kw)   document.getElementById("road-input").value = kw;
-    
-        handleSearch(); // 你現有的搜尋 function
-      }, 150);
-    }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
