@@ -1002,7 +1002,7 @@
     
       updateCompareBadges();
     }
-    /** ========= 實價登錄（維持原功能） ========= **/
+    /** ========= 實價登錄 ========= **/
     const PRICE_DATA = [];
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:100, filters:{} };
 
@@ -1100,7 +1100,18 @@
       const totalWan = num(map['總價元']) / 10000;
     
       // 建築完成年月 → 建築年份 / 屋齡
-      const buildDate = buildYmToDate(map['建築完成年月']);
+      // 取得建築完成年月的原始值（容錯所有可能的欄位名稱）
+      const buildYmRaw =
+        map['建築完成年月'] ||
+        map['建築完成日期'] ||
+        map['建築完成年月日'] ||
+        map['建築完成年月日 '] ||
+        map['建築完成年月 '] ||
+        map['建築完成年月　'] ||  // 全形空白
+        "";
+      
+      // 解析屋齡
+      const buildDate = buildYmToDate(buildYmRaw);
       const ageYears = calcAgeYears(buildDate);
     
       // 交易年月日 → 轉年-月
@@ -1623,15 +1634,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
