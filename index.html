@@ -446,7 +446,6 @@
     const formatWan = (wan)=> wan.toLocaleString() + ' 萬';
     const $ = (sel, el=document)=> el.querySelector(sel);
     const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
-    // 取代原本的 num()
 
     // 簡易 CSV 解析（支援引號、逗號、換行）
     function parseCsv(text) {
@@ -569,12 +568,12 @@
         type,
         title,
         img: './images/placeholder.jpg',
-        desc,                     // ← 乾淨的「特色」內容
+        desc,                     // 乾淨的「特色」內容
         priceWan,
         _district: district,
         _addr: addr,
         areaPing,
-        link                     // ← 連結正規化後放進來
+        link                     // 連結正規化後放進來
       };
     }
     /** ========= 比價 ========= **/
@@ -883,7 +882,6 @@
                 <th>價格</th>
                 <th>特色</th>
                 <th>連結</th>
-                
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -982,7 +980,7 @@
       <button class="btn primary" id="btn-next-buy" ${PAGE_STATE.page>=pages?'disabled':''}>下一頁</button>
     `;
     
-    // ← 新增小工具：平滑捲到頁面最上方（避開 sticky 導覽列可自行加 offset）
+    // 小工具：平滑捲到頁面最上方（避開 sticky 導覽列可自行加 offset）
     const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     
     $('#btn-prev-buy')?.addEventListener('click', ()=>{
@@ -1024,7 +1022,7 @@
     function buildYmToDate(val){
       if(!val) return null;
       let s = String(val).trim();
-      s = s.replace(/[^\d]/g, ""); // 保留數字
+      s = s.replace(/[^\d]/g, "");  // 保留數字
     
       // 6 碼：ROC YYYMMDD，例如 830620 → 民國83年06月
       if (s.length === 6){
@@ -1177,9 +1175,9 @@
     ];
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
-      if (PRICE_READY) return;   // ← 保證只執行一次
+      if (PRICE_READY) return;   // 保證只執行一次
     
-      PRICE_READY = true;        // ← 一開始就鎖住，避免遞迴爆炸
+      PRICE_READY = true;        // 一開始就鎖住，避免遞迴爆炸
     
       const base = "./data/";
       const texts = [];
@@ -1212,6 +1210,7 @@
       const arrow = priceState.sortKey===key ? (priceState.sortDir==='asc'?'▲':'▼') : '';
       return `<th class="sortable" data-key="${key}">${label} <span class="arrow">${arrow}</span></th>`;
     }
+    
     function ControlsPrice(){
       const typeOptions = [
         "公寓",
@@ -1224,7 +1223,6 @@
     
       return `
       <section class="controls" role="region" aria-label="實價篩選">
-    
         <div class="field">
           <label>城市</label>
           <input id="p-city" type="text" placeholder="例如：臺北市">
@@ -1248,6 +1246,7 @@
               <span id="ptype-placeholder">全部</span>
               <span>▼</span>
             </div>
+            
             <div class="multi-select-list">
               ${typeOptions.map(t => `
                 <label class="multi-item">
@@ -1297,7 +1296,6 @@
           <button id="p-search" class="btn primary">搜尋</button>
           <button id="p-reset" class="btn ghost">重設</button>
         </div>
-    
       </section>`;
     }
 
@@ -1361,7 +1359,7 @@
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
         const okUnit  = r.unitWanPerPing >= f.minUnit && r.unitWanPerPing <= f.maxUnit;
     
-        // 新增：屋齡篩選
+        // 屋齡篩選
         const okAge   = r.age >= f.minAge && r.age <= f.maxAge;
     
         return okCity && okDist && okRoad && okType &&
@@ -1634,3 +1632,4 @@
   </script>
 </body>
 </html>
+
