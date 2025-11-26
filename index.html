@@ -235,19 +235,17 @@
       border-collapse:collapse;
       min-width:900px;
     }
-    th{
+    
+    th,td{
       padding:12px;
       border-bottom:1px solid #333;
-      text-align:center;
     }
 
-    td{
-      padding:12px;
-      border-bottom:1px solid #333;
-      text-align:center;
-      color:#FFD700; 
+    .news-title-yl {
+      color: #FFEE00;   /* 亮黃色 */
+      font-weight: 600;
     }
-    
+
     /* ========================== Pager ========================== */
     .pager{
       display:flex;
@@ -789,8 +787,13 @@
         { title:"地產天下", source:"自由時報", url:"https://estate.ltn.com.tw/" },
         { title:"房市即時", source:"工商時報", url:"https://www.ctee.com.tw/livenews/house" },
         { title:"591 房市新聞", source:"591", url:"https://news.591.com.tw/" },
-      ].map(n => '<tr><td>' + n.title + '</td><td>' + n.source + '</td><td><a class="btn link" href="' + n.url + '" target="_blank" rel="noopener">查看</a></td></tr>').join('');
-      return `
+      ].map(n => `
+        <tr>
+          <td class="news-title-yl">${n.title}</td>
+          <td>${n.source}</td>
+          <td><a class="btn link" href="${n.url}" target="_blank" rel="noopener">查看</a></td>
+        </tr>
+      `).join('');
         <section class="hero" aria-label="主視覺">
           <div class="hero-inner">
             <h1>找到你理想的家</h1>
@@ -1618,6 +1621,7 @@
   </script>
 </body>
 </html>
+
 
 
 
