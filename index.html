@@ -1048,13 +1048,17 @@
       return null;
     }
     function calcAgeYears(buildDate, now = new Date()){
-      if (!buildDate || isNaN(buildDate.getTime())) return 0;
+      if (!buildDate || isNaN(buildDate.getTime())) return null;
+    
       let years = now.getFullYear() - buildDate.getFullYear();
       const mNow = now.getMonth();
       const mBuild = buildDate.getMonth();
+    
       if (mNow < mBuild) years -= 1;
-      return Math.max(0, years);
+    
+      return years;
     }
+
     function splitCityDist(addr){
       if(!addr) return { city:'', district:'', road: addr || '' };
       const s = String(addr);
@@ -1391,7 +1395,7 @@
           <td>${r.areaPing}</td>
           <td>${r.unitWanPerPing}</td>
           <td>${r.totalWan}</td>
-          <td>${r.age}</td>   <!--  新增 -->
+          <td>${r.age === null ? 'NULL' : r.age}</td>
         </tr>
       `).join('');
       const info = $('#price-info');
@@ -1632,4 +1636,5 @@
   </script>
 </body>
 </html>
+
 
