@@ -1449,8 +1449,9 @@
           if (q) {
             const p = new URLSearchParams(q);
     
-            if($('#search-city')) $('#search-city').value = p.get('city') || '';
-            if($('#search-road')) $('#search-road').value = p.get('road') || '';
+            if($('#f-city')) $('#f-city').value = p.get('city') || '';
+            if($('#f-dist')) $('#f-dist').value = p.get('dist') || '';
+            if($('#f-road')) $('#f-road').value = p.get('road') || '';
             if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
             if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
     
@@ -1491,13 +1492,15 @@
         $('#btn-search')?.addEventListener('click', ()=>{
           const types = $$('.chk-type:checked').map(c => c.value);
           const params = new URLSearchParams({
-            city: $('#search-city').value,
-            road: $('#search-road').value,
-            min:  $('#min-price').value,
-            max:  $('#max-price').value,
+            city: $('#f-city')?.value || '',
+            dist: $('#f-dist')?.value || '',
+            road: $('#f-road')?.value || '',
+            min:  $('#min-price')?.value || '',
+            max:  $('#max-price')?.value || '',
             types: types.join(','),
-            sort: $('#sort').value
+            sort: $('#sort')?.value || 'relevance'
           });
+        
           route('#/buy?' + params.toString());
         });
     
@@ -1600,4 +1603,5 @@
   </script>
 </body>
 </html>
+
 
