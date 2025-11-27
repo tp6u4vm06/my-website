@@ -95,40 +95,45 @@
     }
     
     /* ========================== Controls（篩選） ========================== */
-    /* 讓輸入框、下拉框整體縮小 */
+    .controls{
+      max-width:1200px;
+      margin:24px auto;
+      padding:20px;
+      background:#1f1f1f;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:16px;
+      grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    }
+    
+    .controls .field{
+      background:#242424;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid ;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    
     .controls .field input,
-    .controls .field select,
-    .controls .multi-select-header {
-      font-size: 13px;          /* 字體變小 */
-      padding: 4px 6px;         /* 內距縮小 */
-      height: 32px;             /* 直接限制高度 */
-      line-height: 32px;
+    .controls .field select{
+      width:100%;
+      padding:8px 10px;
+      background:#1a1a1a;
+      border:1px solid #555;
+      border-radius:6px;
+      color:white;
     }
-    
-    /* 價格雙欄一起縮小 */
-    .range-inline {
-      display: flex;
-      gap: 6px;
-    }
-    
-    .range-inline input {
-      flex: 1;
-      height: 32px;
-      padding: 4px 6px;
-      font-size: 13px;
-    }
-    
-    /* 多選型態 header 也要同步縮小 */
-    .multi-select-header {
-      height: 32px;
-      padding: 4px 6px;
-      font-size: 13px;
-    }
-    
-    /* field 外框也縮短 padding */
-    .controls .field {
-      padding: 8px;
-      gap: 4px;
+
+    /* 比價頁面分頁按鈕大小（清空清單 / 回到買屋列表） */
+    #app .pager .btn {
+      min-width: 110px;   /* 按鈕寬度 */
+      height: 44px;       /* 高度 */
+      padding: 10px 16px; /* 內距 */
+      font-size: 16px;    /* 字體大小 */
+      border-radius: 10px;/* 圓角 */
     }
     
     /* ========================== Cards ========================== */
@@ -1634,4 +1639,5 @@
   </script>
 </body>
 </html>
+
 
