@@ -845,7 +845,18 @@
   
     function Controls({ showSort=false }) {
       const typeOptions = [
-        "大樓","公寓","透天","別墅","店面","辦公","華廈"
+        "土地",
+        "大樓",
+        "套房",
+        "辦公",
+        "公寓",
+        "店面",
+        "套房",
+        "別墅",
+        "透天",
+        "店面",
+        "華廈",
+        "辦公",
       ];
     
       return `
@@ -1425,7 +1436,7 @@
                 ${headerCell('city','城市')}
                 ${headerCell('district','行政區')}
                 ${headerCell('addr','路段')}
-                ${headerCell('type','型態')}
+                ${headerCell('type','')}
                 ${headerCell('areaPing','建坪(坪)')}
                 ${headerCell('unitWanPerPing','單價(萬/坪)')}
                 ${headerCell('totalWan','總價(萬)')}
@@ -1732,10 +1743,9 @@
       });
     }
   </script>
-
-
 </body>
 </html>
+
 
 
 
