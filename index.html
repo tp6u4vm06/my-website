@@ -453,9 +453,9 @@
     const LISTINGS_DATA = [];
     let PAGE_STATE = { page: 1, pageSize: 100 };
     const formatWan = (wan)=> wan.toLocaleString() + ' 萬';
-    const $ = (sel, el=document)=> el.querySelector(sel);
+    const $  = (sel, el=document)=> el.querySelector(sel);
     const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
-
+  
     // 簡易 CSV 解析（支援引號、逗號、換行）
     function parseCsv(text) {
       const lines = [];
@@ -478,19 +478,118 @@
       if (cell!=='' || row.length){ row.push(cell); lines.push(row); }
       return lines;
     }
-
+  
+    // 原本用標題組照片檔名用的（保留當備援）
     function titleToImgName(title){
-      // 移除空白、常見符號
       let t = title.trim()
                    .replace(/\s+/g, "")
                    .replace(/[\/\\:*?"<>|]/g, "")
-                   .replace(/￼/g,""); // 有時會有隱藏字元
-    
+                   .replace(/￼/g,"");
       return t;
     }
-
+  
+    // 只取中文字，用來比對
+    function onlyChinese(str){
+      if(!str) return '';
+      return String(str).replace(/[^\u4e00-\u9fff]/g,'');
+    }
+  
+    // 最長共同子字串（用在模糊比對打分）
+    function longestCommonSubstring(a, b){
+      if(!a || !b) return '';
+      const m = a.length, n = b.length;
+      const dp = Array.from({length:m+1}, ()=>Array(n+1).fill(0));
+      let maxLen = 0, endPos = 0;
+      for(let i=1;i<=m;i++){
+        for(let j=1;j<=n;j++){
+          if(a[i-1] === b[j-1]){
+            dp[i][j] = dp[i-1][j-1] + 1;
+            if(dp[i][j] > maxLen){
+              maxLen = dp[i][j];
+              endPos = i;
+            }
+          }
+        }
+      }
+      return a.slice(endPos - maxLen, endPos);
+    }
+  
+    /**
+     * 依「物件標題」自動幫每筆 LISTINGS_DATA 找對應圖片
+     * 需要在 ./data/image_list.txt 準備「每行一個檔名」的清單，例如：
+     * Page_15_12_buy_1530ZH_正隆麗池大四房＋平面車位.jpg
+     * Page_24_10_buy_8572XS_國泰一品面樹海三房車位.jpg
+     * ...
+     */
+    async function autoMatchImages(items){
+      let text = '';
+      try{
+        const res = await fetch('./data/image_list.txt');
+        if(!res.ok){
+          console.warn('[IMG] 找不到 ./data/image_list.txt，先用 placeholder 圖片');
+          return;
+        }
+        text = await res.text();
+      }catch(e){
+        console.warn('[IMG] 載入 image_list.txt 失敗', e);
+        return;
+      }
+  
+      const files = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      if(!files.length){
+        console.warn('[IMG] image_list.txt 是空的');
+        return;
+      }
+  
+      // 預先把檔名的中文字抽出來
+      const imageInfos = files.map(name=>{
+        const base = name.replace(/^.*[\\/]/,'');       // 去掉路徑
+        const noExt = base.replace(/\.[^.]+$/,'');      // 去掉副檔名
+        return {
+          file: name,
+          zh: onlyChinese(noExt)
+        };
+      });
+  
+      items.forEach(item=>{
+        const titleZh = onlyChinese(item.title);
+        if(!titleZh || titleZh.length < 2) return;
+  
+        // 先用前 4 個字做第一層篩選，減少比對量
+        const key4 = titleZh.slice(0,4);
+        let candidates = imageInfos.filter(img => img.zh.includes(key4));
+  
+        // 若完全沒有，退而求其次用前 2 個字
+        if(!candidates.length){
+          const key2 = titleZh.slice(0,2);
+          candidates = imageInfos.filter(img => img.zh.includes(key2));
+        }
+  
+        if(!candidates.length) return;
+  
+        // 多個候選 → 用最長共同子字串的長度當分數
+        let best = candidates[0];
+        let bestScore = 0;
+        candidates.forEach(img=>{
+          const common = longestCommonSubstring(titleZh, img.zh);
+          const score = common.length;
+          if(score > bestScore){
+            bestScore = score;
+            best = img;
+          }
+        });
+  
+        // 門檻：共同子字串至少 2 個字才當作有 match
+        if(best && bestScore >= 2){
+          item.img = `./images/${best.file}`;
+        }
+      });
+  
+      console.log('[IMG] 已嘗試為', items.length, '筆物件自動掛圖');
+    }
+  
     /** ====== 整合信義房屋 CSV 欄位對應 ====== **/
-
+  
     // 轉數字（去除逗號、萬、空白等）
     function num(s){
       if(!s) return 0;
@@ -525,17 +624,16 @@
       floor:    ["所在樓層","樓層"],
       layout:   ["格局","房廳衛","房/廳/衛"],
       desc:     ["額外資訊2","描述","特色","備註"],
-      priceWan: ["目前價格","價格","總價","售價","總價(萬)","開價(萬)"] // ← 關鍵補上
+      priceWan: ["目前價格","價格","總價","售價","總價(萬)","開價(萬)"]
     };
-
-    
+  
     // 從欄位 map 取值的小工具
     function getCell(map, names){
-      if (!names) return '';                         // 允許 undefined
-      const list = Array.isArray(names) ? names : [names]; // 允許傳字串
+      if (!names) return '';
+      const list = Array.isArray(names) ? names : [names];
       for (const n of list){
         if (map[n] !== undefined){
-          const v = cleanVal(map[n]);               // 你先前加的 cleanVal
+          const v = cleanVal(map[n]);
           if (v) return v;
         }
       }
@@ -547,7 +645,6 @@
       const map = {};
       header.forEach((h, i)=> map[String(h).trim()] = (row[i] ?? '').toString().trim());
     
-      // 先取欄位（已自動清除 #NAME?/N/A）
       const linkRaw  = getCell(map, COLS.link);
       const title    = getCell(map, COLS.title) || '未命名物件';
       const addr     = getCell(map, COLS.address);
@@ -575,7 +672,7 @@
       const descParts = [layout, floor, agePart, extra].filter(Boolean);
       const desc = descParts.length ? descParts.join('｜') : '—';
     
-      // === 正確加入圖片處理 ===
+      // 先給一個預設圖片，等等 autoMatchImages 會再覆蓋
       const cleanTitle = titleToImgName(title);
       const imgFile = `Page_1_1_buy_${cleanTitle}.jpg`;
     
@@ -584,7 +681,7 @@
         city,
         type,
         title,
-        img: `./images/${imgFile}`,
+        img: `./images/${imgFile}`,   // 先用規則檔名，之後再用 autoMatchImages 覆蓋
         desc,
         priceWan,
         _district: district,
@@ -609,14 +706,14 @@
         btn.textContent = inCompare(id) ? '取消比較' : '加入比較';
       });
     }
-
+  
     /** ========= 新建案 ========= **/
     const NEW_PROJECTS = [
-      { id:101, name:"永康真", builder:"永康建建設", city:"新北市板橋區", priceWanFrom:2061, img:"./images/id101.jpg", highlights:["府中雙城心","板南線450米","醇靜宅"], linkBrochure:"https://newhouse.591.com.tw/138134" },
-      { id:102, name:"信義誠家", builder:"誠家興建設", city:"台北市信義區", priceWanFrom:92,  img:"./images/id102.jpg", highlights:["商圈學區5分鐘"], linkBrochure:"https://newhouse.591.com.tw/136360" },
-      { id:103, name:"佳鋐首耀", builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom:728, img:"./images/id103.jpg", highlights:["車站商圈","雙軌宅"], linkBrochure:"https://newhouse.591.com.tw/137089" }
+      { id:101, name:"永康真",    builder:"永康建建設", city:"新北市板橋區", priceWanFrom:2061, img:"./images/id101.jpg", highlights:["府中雙城心","板南線450米","醇靜宅"], linkBrochure:"https://newhouse.591.com.tw/138134" },
+      { id:102, name:"信義誠家",  builder:"誠家興建設", city:"台北市信義區", priceWanFrom:92,   img:"./images/id102.jpg", highlights:["商圈學區5分鐘"],             linkBrochure:"https://newhouse.591.com.tw/136360" },
+      { id:103, name:"佳鋐首耀",  builder:"佳鋐建建設", city:"台中市梧棲區", priceWanFrom:728, img:"./images/id103.jpg", highlights:["車站商圈","雙軌宅"],             linkBrochure:"https://newhouse.591.com.tw/137089" }
     ];
-
+  
     /** ========= 待售房屋：CSV 自動匯入（含物件超連結） ========= **/
     const LISTING_BASE = "./data/";
     const LISTING_FILES = [
@@ -627,7 +724,7 @@
       "1_信義房屋_Taipei_P50.csv",
       "1_信義房屋_Taoyuan_P50.csv",
     ];
-
+  
     function listingsCsvToRecords(text){
       const rows = parseCsv(text).filter(r => r.length && r.some(x => x && x.trim() !== ''));
       if(!rows.length) return [];
@@ -640,7 +737,7 @@
       }
       return out;
     }
-
+  
     function dedupByKey(arr){
       const seen = new Set();
       const unique = [];
@@ -652,7 +749,7 @@
       unique.forEach((r,i)=> r.id = i+1);
       return unique;
     }
-
+  
     let LISTINGS_READY = false;
     async function autoLoadListingsFromPresetSilent(){
       if (LISTINGS_READY) return;
@@ -671,15 +768,19 @@
       const all = [];
       for(const t of texts) all.push(...listingsCsvToRecords(t));
       const merged = dedupByKey(all);
+  
       LISTINGS_DATA.length = 0;
       LISTINGS_DATA.push(...merged);
+  
+      // 這裡呼叫自動掛圖
+      await autoMatchImages(LISTINGS_DATA);
+  
       LISTINGS_READY = true;
-    
       console.log("[LISTINGS] 已載入", LISTINGS_DATA.length, "筆資料");
-      let PAGE_STATE = { page: 1, pageSize: 100 };
+      PAGE_STATE = { page: 1, pageSize: 100 };
       updateCompareBadges();
     }
-
+  
     /** ========= 卡片與頁面（含連結按鈕） ========= **/
     // 圖片檔安全處理（避免破圖快取問題，可加可不加）
     function safeImg(path){
@@ -691,7 +792,7 @@
       return `
         <article class="card" aria-label="房屋卡片">
           <div class="img" style="background-image:url('${safeImg(item.img)}')" role="img" aria-label="${item.title}"></div>
-    
+  
           <div class="content">
             <div class="meta">
               <div>
@@ -700,12 +801,12 @@
                 <!-- csv[城市][地區][房屋類型] -->
                 <div class="tags">${cityDist} • ${item.type}</div>
               </div>
-    
+  
               <!-- 價格籤 -->
               <div class="price" style="font-size:18px;">NT$ ${formatWan(item.priceWan)}</div>
             </div>
           </div>
-    
+  
           <div class="actions">
             <button class="btn ghost" onclick="viewDetail(${item.id})">更多</button>
             <button class="btn" data-role="compare" data-id="${item.id}" onclick="toggleCompare(${item.id})" style="font-size:12px;">
@@ -715,7 +816,7 @@
           </div>
         </article>`;
     }
-
+  
     function projectCard(p){
       return `
         <article class="card">
@@ -733,7 +834,7 @@
           </div>
         </article>`;
     }
-
+  
     function Controls({ showSort=false }) {
       const typeOptions = [
         "大樓","公寓","透天","別墅","店面","辦公","華廈"
@@ -800,7 +901,7 @@
     
       </section>`;
     }
-
+  
     function PageHome(){
       const top6 = (LISTINGS_DATA.length ? [...LISTINGS_DATA] : []).sort((a,b)=> b.priceWan - a.priceWan).slice(0,6);
       const newsRows = [
@@ -850,7 +951,7 @@
         </section>
       `;
     }
-
+  
     function PageBuy(){
       return `
         <h2 class="section-title">待售房屋</h2>
@@ -859,12 +960,11 @@
         <div id="grid" class="grid" aria-live="polite"></div>
       `;
     }
-
+  
     function PageCompare(){
       const ids = getCompareIds();
       const items = LISTINGS_DATA.filter(d=> ids.includes(d.id));
     
-      // 沒選擇任何物件時顯示提示
       if (!items.length) {
         return `
           <h2 class="section-title">房屋比價</h2>
@@ -875,7 +975,6 @@
         `;
       }
     
-      // 表格內容：每筆物件一列
       const rows = items.map(it => `
         <tr>
           <td><div class="img" style="height:100px;background-image:url('${it.img}')"></div></td>
@@ -885,7 +984,6 @@
           <td>NT$ ${formatWan(it.priceWan)}</td>
           <td>${it.desc || '—'}</td>
           <td>${ it.link ? `<a class="btn primary" href="${it.link}" target="_blank" rel="noopener" font-size="14px">前往</a>` : '—' }</td>
-          
         </tr>
       `).join('');
     
@@ -913,7 +1011,7 @@
         </div>
       `;
     }
-
+  
     /** ========= 買屋篩選/排序 ========= **/
     function getFilters(){
       return {
@@ -956,23 +1054,21 @@
     
       renderList(results);
     }
-
+  
     function renderList(items){
       const grid = $('#grid'); 
       const noResults = $('#no-results');
       if(!grid) return;
     
-      // 如果沒有資料
       if(!items.length){ 
         noResults && (noResults.style.display='block'); 
         grid.innerHTML = ''; 
-        $('#pager-buy')?.remove(); // 移除舊的分頁
+        $('#pager-buy')?.remove();
         return; 
       } else { 
         noResults && (noResults.style.display='none'); 
       }
     
-      // 分頁處理
       const total = items.length;
       const pages = Math.ceil(total / PAGE_STATE.pageSize);
       PAGE_STATE.page = Math.min(PAGE_STATE.page, pages);
@@ -980,10 +1076,8 @@
       const end = start + PAGE_STATE.pageSize;
       const pageItems = items.slice(start, end);
     
-      // 渲染卡片
       grid.innerHTML = pageItems.map(card).join('');
     
-      // 更新頁碼顯示
       let pager = $('#pager-buy');
       if(!pager){
         pager = document.createElement('div');
@@ -1000,30 +1094,30 @@
       <button class="btn primary" id="btn-next-buy" ${PAGE_STATE.page>=pages?'disabled':''}>下一頁</button>
     `;
     
-    // 小工具：平滑捲到頁面最上方（避開 sticky 導覽列可自行加 offset）
-    const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+      const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    $('#btn-prev-buy')?.addEventListener('click', ()=>{
-      if(PAGE_STATE.page>1){ 
-        PAGE_STATE.page--; 
-        renderList(items);
-        goTop();            // 切頁後捲到上方
-      }
-    });
-    $('#btn-next-buy')?.addEventListener('click', ()=>{
-      if(PAGE_STATE.page<pages){ 
-        PAGE_STATE.page++; 
-        renderList(items);
-        goTop();            // 切頁後捲到上方
-      }
-    });
+      $('#btn-prev-buy')?.addEventListener('click', ()=>{
+        if(PAGE_STATE.page>1){ 
+          PAGE_STATE.page--; 
+          renderList(items);
+          goTop();
+        }
+      });
+      $('#btn-next-buy')?.addEventListener('click', ()=>{
+        if(PAGE_STATE.page<pages){ 
+          PAGE_STATE.page++; 
+          renderList(items);
+          goTop();
+        }
+      });
     
       updateCompareBadges();
     }
+  
     /** ========= 實價登錄 ========= **/
     const PRICE_DATA = [];
     const priceState = { sortKey:'date', sortDir:'desc', page:1, pageSize:100, filters:{} };
-
+  
     function toYearMonth(s){
       if(!s) return '';
       const t = String(s).trim();
@@ -1042,23 +1136,20 @@
     function buildYmToDate(val){
       if(!val) return null;
       let s = String(val).trim();
-      s = s.replace(/[^\d]/g, "");  // 保留數字
+      s = s.replace(/[^\d]/g, "");
     
-      // 6 碼：ROC YYYMMDD，例如 830620 → 民國83年06月
       if (s.length === 6){
         const y = 1911 + parseInt(s.slice(0,3),10);
         const m = parseInt(s.slice(3,5),10);
         return new Date(y, m - 1, 1);
       }
     
-      // 7 碼：ROC YYYMMDD，例如 1120327
       if (s.length === 7){
         const y = 1911 + parseInt(s.slice(0,3),10);
         const m = parseInt(s.slice(3,5),10);
         return new Date(y, m - 1, 1);
       }
     
-      // 8 碼：YYYYMMDD，例如 20220531
       if (s.length === 8){
         const y = parseInt(s.slice(0,4),10);
         const m = parseInt(s.slice(4,6),10);
@@ -1079,7 +1170,7 @@
     
       return years;
     }
-
+  
     function splitCityDist(addr){
       if(!addr) return { city:'', district:'', road: addr || '' };
       const s = String(addr);
@@ -1089,58 +1180,47 @@
       if (mCity) return { city: mCity[1].trim(), district: '', road: mCity[2].trim() };
       return { city:'', district:'', road: s.trim() };
     }
-
+  
     function rowToRecord(header, row) {
       const map = {};
       header.forEach((h, idx) => map[String(h).trim()] = (row[idx] ?? '').toString().trim());
     
-      // 地址
       const 地址 = map['土地位置建物門牌'] || '';
       const addrParts = splitCityDist(地址);
       
-      // 城市 / 行政區
       const city = addrParts.city;
       const district = map['鄉鎮市區'] || addrParts.district;
     
-      // 建物型態（需要清潔文字，例如：華廈(10層含以下有電梯) → 華廈）
       let rawType = map['建物型態'] || map['交易標的'] || '';
-      rawType = rawType.replace(/\(.+\)/g, ""); // 去括號內容
-      rawType = rawType.replace(/[（(].+[）)]/g, ""); // 全形半形一起處理
+      rawType = rawType.replace(/\(.+\)/g, "");
+      rawType = rawType.replace(/[（(].+[）)]/g, "");
       rawType = rawType.trim();
     
-      // 面積（坪）
-      const bAreaM2 = num(map['建物移轉總面積平方公尺']);  // m2
+      const bAreaM2 = num(map['建物移轉總面積平方公尺']);
       const areaPing = bAreaM2 ? (bAreaM2 / 3.305785) : 0;
     
-      // 單價（萬/坪）
       const unitPerM2 = num(map['單價元平方公尺']);
       let unitWanPerPing = 0;
       if (unitPerM2) {
         unitWanPerPing = (unitPerM2 * 3.305785) / 10000;
       }
     
-      // 總價（萬）
       const totalWan = num(map['總價元']) / 10000;
     
-      // 建築完成年月 → 建築年份 / 屋齡
-      // 取得建築完成年月的原始值（容錯所有可能的欄位名稱）
       const buildYmRaw =
         map['建築完成年月'] ||
         map['建築完成日期'] ||
         map['建築完成年月日'] ||
         map['建築完成年月日 '] ||
         map['建築完成年月 '] ||
-        map['建築完成年月　'] ||  // 全形空白
+        map['建築完成年月　'] ||
         "";
       
-      // 解析屋齡
       const buildDate = buildYmToDate(buildYmRaw);
       const ageYears = calcAgeYears(buildDate);
     
-      // 交易年月日 → 轉年-月
       const date = toYearMonth(map['交易年月日']);
     
-      // 若缺交易日 or 缺地址 → 略過
       if (!date || (!city && !district && !addrParts.road)) return null;
     
       const rec = {
@@ -1158,7 +1238,7 @@
     
       return rec;
     }
-
+  
     function csvTextToRecords(text) {
       const lines = parseCsv(text).filter(r => r.length && r.some(x => x && x.trim() !== ''));
       if (!lines.length) return [];
@@ -1183,7 +1263,6 @@
       return unique;
     }
     
-    // 刪除 "第一季台南.csv","第一季高雄.csv","第一季台中.csv","第一季台北.csv","第一季桃園.csv","第一季新北.csv",
     const PRESET_FILES = [
       "第二季桃園.csv",
       "第二季台中.csv",
@@ -1200,9 +1279,9 @@
     ];
     let PRICE_READY = false;
     async function autoLoadFromPresetSilent(){
-      if (PRICE_READY) return;   // 保證只執行一次
+      if (PRICE_READY) return;
     
-      PRICE_READY = true;        // 一開始就鎖住，避免遞迴爆炸
+      PRICE_READY = true;
     
       const base = "./data/";
       const texts = [];
@@ -1230,7 +1309,7 @@
     
       console.log("[PRICE] 已載入", PRICE_DATA.length, "筆");
     }
-
+  
     function headerCell(key, label){
       const arrow = priceState.sortKey===key ? (priceState.sortDir==='asc'?'▲':'▼') : '';
       return `<th class="sortable" data-key="${key}">${label} <span class="arrow">${arrow}</span></th>`;
@@ -1308,7 +1387,7 @@
             <input id="p-max-unit" type="number" placeholder="最高" min="0" style="width:120px">
           </div>
         </div>
-
+  
         <div class="field">
           <label>屋齡(年)</label>
           <div class="range-inline">
@@ -1323,7 +1402,7 @@
         </div>
       </section>`;
     }
-
+  
     function PagePrice(){
       return `
         <h2 class="section-title">實價登錄</h2>
@@ -1369,7 +1448,7 @@
         maxAge: Number($('#p-max-age')?.value) || Infinity,
       };
     }
-
+  
     function applyPrice(){
       const f = getPriceFilters();
       let list = PRICE_DATA.filter(r=>{
@@ -1383,10 +1462,7 @@
         const okTo    = !f.to   || r.date <= f.to;
         const okTotal = r.totalWan >= f.minTotal && r.totalWan <= f.maxTotal;
         const okUnit  = r.unitWanPerPing >= f.minUnit && r.unitWanPerPing <= f.maxUnit;
-    
-        // 屋齡篩選
         const okAge   = r.age >= f.minAge && r.age <= f.maxAge;
-    
         return okCity && okDist && okRoad && okType &&
                okFrom && okTo && okTotal && okUnit && okAge;
       });
@@ -1398,7 +1474,7 @@
       });
       renderPrice(list);
     }
-
+  
     function renderPrice(list){
       const tbody = $('#price-tbody'); if(!tbody) return;
       const total = list.length;
@@ -1447,7 +1523,7 @@
     function bindPriceControls(){
       $('#p-search')?.addEventListener('click', ()=>{ priceState.page=1; applyPrice(); });
       $('#p-reset')?.addEventListener('click', ()=>{
-        ['p-city','p-dist','p-road','p-type','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit','p-min-age','p-max-age' ].forEach(id=>{
+        ['p-city','p-dist','p-road','p-from','p-to','p-min-total','p-max-total','p-min-unit','p-max-unit','p-min-age','p-max-age' ].forEach(id=>{
           const el=$('#'+id); if(!el) return; el.value='';
         });
         priceState.page=1;
@@ -1456,7 +1532,7 @@
         applyPrice();
       });
     }
-
+  
     /** ========= Router ========= **/
     function route(hash){ window.location.hash = hash; }
     function setActiveNav(hash){
@@ -1466,9 +1542,9 @@
       else if(hash.startsWith('#/price')) $('#nav-price').classList.add('active');
       else $('#nav-home').classList.add('active');
     }
-
+  
     async function ensureLoadListings(){ await autoLoadListingsFromPresetSilent(); }
-
+  
     function renderRoute(){
       const h = window.location.hash || '#/home';
       setActiveNav(h);
@@ -1480,10 +1556,8 @@
     
         ensureLoadListings().then(()=>{
     
-          //  搜尋按鈕
           $('#btn-search')?.addEventListener('click', applyFilters);
     
-          //  重設按鈕
           $('#btn-reset')?.addEventListener('click', ()=>{
             $('#search-city').value='';
             $('#search-road').value='';
@@ -1491,14 +1565,12 @@
             $('#max-price').value='';
             $('#sort').value='relevance';
     
-            // 清空型態
             $$('.chk-type').forEach(c => c.checked = false);
             updateTypeLabel();
     
             applyFilters();
           });
     
-          // 讀取首頁搜尋參數
           const q = h.split('?')[1];
           if (q) {
             const p = new URLSearchParams(q);
@@ -1509,7 +1581,6 @@
             if($('#min-price'))   $('#min-price').value   = p.get('min')  || '';
             if($('#max-price'))   $('#max-price').value   = p.get('max')  || '';
     
-            // 型態多選
             const typesStr = p.get('types') || '';
             const types = typesStr ? typesStr.split(',') : [];
             $$('.chk-type').forEach(c => c.checked = types.includes(c.value));
@@ -1518,7 +1589,6 @@
             if($('#sort')) $('#sort').value = p.get('sort') || 'relevance';
           }
     
-          // 進入頁面即套用篩選
           applyFilters();
         });
     
@@ -1569,17 +1639,16 @@
         updateCompareBadges();
       });
     }
-
+  
     window.addEventListener('hashchange', renderRoute);
     window.addEventListener('DOMContentLoaded', renderRoute);
-
+  
     /** ========= 其他互動 ========= **/
     function viewDetail(id){
       const item = LISTINGS_DATA.find(d=>d.id===id);
       if(!item) return;
       const where = item.city + (item._district ? " " + item._district : "");
       
-      // 建立 Modal HTML
       const modal = document.createElement('div');
       modal.style.position = 'fixed';
       modal.style.inset = '0';
@@ -1605,20 +1674,21 @@
       modal.querySelector('button').onclick = () => modal.remove();
       document.body.appendChild(modal);
     }
-
+  
     function contactAgent(id){
       const item = LISTINGS_DATA.find(d=>d.id===id);
       if(!item) return;
       const name = encodeURIComponent(item.title);
       window.location.href = `mailto:agent@example.com?subject=我要諮詢%20${name}&body=您好，我想了解 ${name} 的更多資訊。`;
     }
-
+  
     function clearCompareAndRerender(){
-      setCompareIds([]);     // 清空 localStorage
-      updateCompareBadges(); // 更新導覽列上的「比價(...)」
-      route('#/compare');    // 停留在比價頁（或你想跳回買屋可改成 '#/buy'）
-      renderRoute();         // 直接重畫畫面，不用 F5
+      setCompareIds([]);
+      updateCompareBadges();
+      route('#/compare');
+      renderRoute();
     }
+  
     // === 下拉式型態多選控制 ===
     document.addEventListener('click', (e)=>{
       const dropdowns = $$('.multi-select');
@@ -1626,19 +1696,16 @@
       dropdowns.forEach(dd=>{
         const header = dd.querySelector('.multi-select-header');
     
-        // 點到 header → 展開/收合
         if(header.contains(e.target)){
           dd.classList.toggle('open');
           return;
         }
     
-        // 點 checkbox → 更新標題
         if(dd.contains(e.target) && e.target.classList.contains('chk-type')){
           updateTypeLabel();
           return;
         }
     
-        // 點到外面 → 關閉
         if(!dd.contains(e.target)){
           dd.classList.remove('open');
         }
@@ -1655,8 +1722,11 @@
       });
     }
   </script>
+
+
 </body>
 </html>
+
 
 
 
