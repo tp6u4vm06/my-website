@@ -172,6 +172,15 @@
       flex-direction:column;
       gap:10px;
     }
+
+    .compare-img {
+      width: 160px;               /* 圖片欄寬度（可調） */
+      height: 120px;              /* 圖片高度（可調） */
+      background-size: cover;     /* 塞滿並裁切 */
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 6px;         /* 圓角更美觀 */
+    }
     
     /* ======== meta / price / tags ======== */
     .meta{
@@ -976,7 +985,9 @@
     
       const rows = items.map(it => `
         <tr>
-          <td><div class="img" style="height:100px;background-image:url('${it.img}')"></div></td>
+          <td>
+            <div class="compare-img" style="background-image:url('${it.img}')"></div>
+          </td>
           <td>${it.title}</td>
           <td>${it.city}${it._district ? ' ' + it._district : ''}</td>
           <td>${it.type}</td>
@@ -1725,6 +1736,7 @@
 
 </body>
 </html>
+
 
 
 
