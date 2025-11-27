@@ -555,61 +555,45 @@
       const areaPing = num(getCell(map, COLS.areaPing));
       const floor    = getCell(map, COLS.floor);
       const layout   = getCell(map, COLS.layout);
-      const ageTxt   = getCell(map, COLS.age);         // 可能是數字或年月
-      const extra    = getCell(map, COLS.desc);        // 若 CSV 有「特色/描述」就也帶上
+      const ageTxt   = getCell(map, COLS.age);
+      const extra    = getCell(map, COLS.desc);
       const priceStr = getCell(map, COLS.priceWan);
     
-      // 價格（信義/永慶常見：2,188萬）
       const priceWan = num(priceStr);
       if(!addr || !priceWan) return null;
     
-      // 自動補上 https:// 開頭
       const link = normalizeUrl(linkRaw);
     
-      // 拆城市/行政區
       const m = addr.match(/^(.*?[縣市])(.*?[區鄉鎮市])(.*)$/);
       const city = m ? m[1] : '';
       const district = m ? m[2] : '';
     
-      // 年齡字串（如果 ageTxt 可轉數字，就顯示「屋齡X年」；否則直接略過）
       let agePart = '';
       const ageNum = num(ageTxt);
       if(ageNum > 0) agePart = `屋齡${ageNum}年`;
     
-      // 組合特色（自動過濾空字串）
       const descParts = [layout, floor, agePart, extra].filter(Boolean);
       const desc = descParts.length ? descParts.join('｜') : '—';
+    
+      // === 正確加入圖片處理 ===
+      const cleanTitle = titleToImgName(title);
+      const imgFile = `Page_1_1_buy_${cleanTitle}.jpg`;
     
       return {
         id: undefined,
         city,
         type,
         title,
-        // 自動加圖片：檔案命名規則 Page_1_1_buy_???? + 處理過的 title
-        const cleanTitle = titleToImgName(title);
-        const imgName = `Page_1_1_buy_${cleanTitle}.jpg`;
-        
-        return {
-          id: undefined,
-          city,
-          type,
-          title,
-          img: `./images/${imgName}`,   // ← 放入你的圖片
-          desc,
-          priceWan,
-          _district: district,
-          _addr: addr,
-          areaPing,
-          link
-        };
-        desc,                     // 乾淨的「特色」內容
+        img: `./images/${imgFile}`,
+        desc,
         priceWan,
         _district: district,
         _addr: addr,
         areaPing,
-        link                     // 連結正規化後放進來
+        link
       };
     }
+    
     /** ========= 比價 ========= **/
     const COMPARE_KEY = 'eg_compare_ids';
     function getCompareIds(){ try { return JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]'); } catch(e){ return []; } }
@@ -1673,6 +1657,7 @@
   </script>
 </body>
 </html>
+
 
 
 
