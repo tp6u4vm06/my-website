@@ -1693,7 +1693,8 @@
     function viewDetail(id){
       const item = LISTINGS_DATA.find(d=>d.id===id);
       if(!item) return;
-      const where = item.city + (item._district ? " " + item._district : "");
+      const where = item._addr || 
+              (item.city + (item._district ? " " + item._district : ""));
       
       const modal = document.createElement('div');
       modal.style.position = 'fixed';
@@ -1770,3 +1771,4 @@
   </script>
 </body>
 </html>
+
