@@ -1,1 +1,30 @@
+name: Auto-generate image_list.txt
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-list:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Generate image_list.txt
+      run: |
+        mkdir -p data
+        ls images > data/image_list.txt
+        echo "image_list.txt 內容如下："
+        cat data/image_list.txt
+
+    - name: Commit changes
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add data/image_list.txt
+        git commit -m "Auto update image_list.txt" || echo "沒有變更需要提交"
+        git push
 
