@@ -173,7 +173,7 @@
       gap:10px;
     }
 
-    /* ====卡片地區、型態換行 ==== */
+    /* --------卡片地區、型態換行 -------- */
     .card .tags {
       margin-top: 4px;
       display: flex;
@@ -270,6 +270,7 @@
       overflow-x:auto;
       box-shadow:var(--shadow);
     }
+    
     table{
       width:100%;
       border-collapse:collapse;
@@ -295,6 +296,7 @@
       gap:8px;
       margin-top:12px;
     }
+    
     .pager .btn{
       flex:0;
       min-width:110px;
@@ -349,16 +351,13 @@
       top: 100%;
       left: 0;
       right: 0;
-    
       background: #ffffff;                  /* 展開變白底 */
       border: 1px solid #d0d0d0;
       border-radius: 8px;
       padding: 10px;
       display: none;
-    
       max-height: 260px;
       overflow-y: auto;
-    
       box-shadow: 0 10px 18px rgba(0,0,0,0.25);
       z-index: 100;
     }
@@ -416,6 +415,7 @@
       font-size:18px; 
       box-shadow:0 4px 10px rgba(30,144,255,0.35); 
     }
+    
     .logo img { 
       height:48px; 
       width:auto; 
@@ -423,8 +423,6 @@
       display:block; 
       border-radius:12px; 
     }
-
-    
 
     /* --- 只控制搜尋欄的 select / input --- */
     .search-bar-wrap select,
@@ -547,11 +545,11 @@
     }
   
     /**
-     * 依「物件標題」自動幫每筆 LISTINGS_DATA 找對應圖片
-     * 需要在 ./data/image_list.txt 準備「每行一個檔名」的清單，例如：
-     * Page_15_12_buy_1530ZH_正隆麗池大四房＋平面車位.jpg
-     * Page_24_10_buy_8572XS_國泰一品面樹海三房車位.jpg
-     * ...
+     - 依「物件標題」自動幫每筆 LISTINGS_DATA 找對應圖片
+     - 需要在 ./data/image_list.txt 準備「每行一個檔名」的清單，例如：
+     - Page_15_12_buy_1530ZH_正隆麗池大四房＋平面車位.jpg
+     - Page_24_10_buy_8572XS_國泰一品面樹海三房車位.jpg
+     - ...
      */
     async function autoMatchImages(items){
       let text = '';
@@ -966,7 +964,7 @@
           <div class="hero-inner">
             <h1>找到你理想的家</h1>
             <p>依地區、價格與房型快速篩選，並提供詳細資訊與比較功能。</p>
-            <a class="cta" href="#/buy">我要找房</a>
+            <a class="cta" href="#/buy" style="color:#b2b2b2;" >我要找房</a>
           </div>
         </section>
         ${Controls({ showSort:true })}
@@ -1657,7 +1655,7 @@
         return;
       }
     
-      /* ==================== #/home (預設) ==================== */
+      /* ==================== #/home ==================== */
       app.innerHTML = PageHome();
     
       ensureLoadListings().then(()=>{
@@ -1772,17 +1770,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
