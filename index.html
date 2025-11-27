@@ -95,71 +95,40 @@
     }
     
     /* ========================== Controls（篩選） ========================== */
-    .controls{
-      max-width:1200px;
-      margin:24px auto;
-      padding:12px 16px;
-      background:#1f1f1f;
-      border-radius:12px;
-      box-shadow:var(--shadow);
-    
-      /*  改成 flex 一排  */
-      display:flex;
-      flex-wrap:nowrap;          /* 不換行 */
-      gap:12px;                  /* 縮小間距 */
-      align-items:flex-end;      
-    }
-    
-    /*  每一欄縮小、平均分布  */
-    .controls .field{
-      flex:1;                    /* 平均分 */
-      min-width:130px;           /* 允許變小後排一列 */
-      background:#242424;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #333;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    
-    /* input/select 縮小，避免塞不下 */
+    /* 讓輸入框、下拉框整體縮小 */
     .controls .field input,
-    .controls .field select{
-      width:100%;
-      padding:6px 8px;
-      background:#1a1a1a;
-      border:1px solid #555;
-      border-radius:6px;
-      font-size:14px;
-      color:white;
+    .controls .field select,
+    .controls .multi-select-header {
+      font-size: 13px;          /* 字體變小 */
+      padding: 4px 6px;         /* 內距縮小 */
+      height: 32px;             /* 直接限制高度 */
+      line-height: 32px;
     }
     
-    /* 價格兩格排法 */
-    .range-inline{
-      display:flex;
-      gap:6px;
-    }
-    .range-inline input{
-      flex:1;
+    /* 價格雙欄一起縮小 */
+    .range-inline {
+      display: flex;
+      gap: 6px;
     }
     
-    /* 下拉多選標頭縮小 */
-    .multi-select-header{
-      padding:6px 8px;
-      font-size:14px;
+    .range-inline input {
+      flex: 1;
+      height: 32px;
+      padding: 4px 6px;
+      font-size: 13px;
     }
     
-    /* 按鈕區固定在最右側，不被壓縮 */
-    .controls .btns{
-      display:flex;
-      flex-shrink:0;
-      gap:10px;
+    /* 多選型態 header 也要同步縮小 */
+    .multi-select-header {
+      height: 32px;
+      padding: 4px 6px;
+      font-size: 13px;
     }
     
-    .controls .btns button{
-      padding:8px 14px;
-      font-size:14px;
+    /* field 外框也縮短 padding */
+    .controls .field {
+      padding: 8px;
+      gap: 4px;
     }
     
     /* ========================== Cards ========================== */
@@ -1665,3 +1634,4 @@
   </script>
 </body>
 </html>
+
