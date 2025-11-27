@@ -5,6 +5,10 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+# 🔥 必加：讓 Actions 有權限寫入 repo（否則 git push 會失敗）
+permissions:
+  contents: write
+
 jobs:
   build-list:
     runs-on: ubuntu-latest
@@ -27,4 +31,3 @@ jobs:
         git add data/image_list.txt
         git commit -m "Auto update image_list.txt" || echo "沒有變更需要提交"
         git push
-
