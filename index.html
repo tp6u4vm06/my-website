@@ -479,7 +479,16 @@
       return lines;
     }
 
+    function titleToImgName(title){
+      // 移除空白、常見符號
+      let t = title.trim()
+                   .replace(/\s+/g, "")
+                   .replace(/[\/\\:*?"<>|]/g, "")
+                   .replace(/￼/g,""); // 有時會有隱藏字元
     
+      return t;
+    }
+
     /** ====== 整合信義房屋 CSV 欄位對應 ====== **/
 
     // 轉數字（去除逗號、萬、空白等）
@@ -576,7 +585,23 @@
         city,
         type,
         title,
-        img: './images/placeholder.jpg',
+        // 自動加圖片：檔案命名規則 Page_1_1_buy_???? + 處理過的 title
+        const cleanTitle = titleToImgName(title);
+        const imgName = `Page_1_1_buy_${cleanTitle}.jpg`;
+        
+        return {
+          id: undefined,
+          city,
+          type,
+          title,
+          img: `./images/${imgName}`,   // ← 放入你的圖片
+          desc,
+          priceWan,
+          _district: district,
+          _addr: addr,
+          areaPing,
+          link
+        };
         desc,                     // 乾淨的「特色」內容
         priceWan,
         _district: district,
@@ -672,11 +697,17 @@
     }
 
     /** ========= 卡片與頁面（含連結按鈕） ========= **/
+    // 圖片檔安全處理（避免破圖快取問題，可加可不加）
+    function safeImg(path){
+      return path + '?v=1';
+    }
+    
     function card(item){
       const cityDist = item.city + (item._district ? " " + item._district : "");
       return `
         <article class="card" aria-label="房屋卡片">
-          <div class="img" style="background-image:url('${item.img}')" role="img" aria-label="${item.title}"></div>
+          <div class="img" style="background-image:url('${safeImg(item.img)}')" role="img" aria-label="${item.title}"></div>
+    
           <div class="content">
             <div class="meta">
               <div>
@@ -685,14 +716,17 @@
                 <!-- csv[城市][地區][房屋類型] -->
                 <div class="tags">${cityDist} • ${item.type}</div>
               </div>
+    
               <!-- 價格籤 -->
               <div class="price" style="font-size:18px;">NT$ ${formatWan(item.priceWan)}</div>
             </div>
           </div>
-
+    
           <div class="actions">
             <button class="btn ghost" onclick="viewDetail(${item.id})">更多</button>
-            <button class="btn" data-role="compare" data-id="${item.id}" onclick="toggleCompare(${item.id})" style="font-size:12px;">${ inCompare(item.id) ? '取消比較' : '加入比較' }</button>
+            <button class="btn" data-role="compare" data-id="${item.id}" onclick="toggleCompare(${item.id})" style="font-size:12px;">
+              ${ inCompare(item.id) ? '取消比較' : '加入比較' }
+            </button>
             ${ item.link ? `<a class="btn primary" href="${item.link}" target="_blank" rel="noopener">連結</a>` : '' }
           </div>
         </article>`;
@@ -1639,5 +1673,6 @@
   </script>
 </body>
 </html>
+
 
 
